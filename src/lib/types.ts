@@ -8,7 +8,7 @@ export type Service =
   | "Component reconditioning"
   | "Precision machining";
 export type Urgency = "planned" | "breakdown" | "shutdown";
-export type Source = "Repeat" | "Referral" | "WhatsApp" | "Website" | "Phone";
+export type Source = "Repeat" | "Referral" | "WhatsApp" | "Website" | "Phone" | "Outreach";
 
 export type Deal = {
   id: string;
@@ -51,6 +51,8 @@ export type Customer = {
   starred: boolean;
   source: Source;
   pumps: Pump[];
+  optOut?: boolean;
+  outSince?: string;
 };
 
 export type Condition = "reuse" | "recondition" | "replace";
@@ -121,6 +123,62 @@ export type InboxItem = {
   done: boolean;
 };
 
+/* ---------------- outreach ---------------- */
+export type AudienceKey = "due" | "quiet" | "lost" | "prospects";
+export type ReplyKind = "yes" | "quote" | "later" | "stop";
+
+export type Prospect = {
+  id: string;
+  contact: string;
+  role: string;
+  company: string;
+  segment: Segment;
+  town: string;
+  email: string;
+  status: "new" | "emailed" | "customer" | "out";
+  outSince?: string;
+  customerId?: string;
+};
+
+export type Recipient = {
+  /** customer or prospect id */
+  id: string;
+  /** emails sent so far */
+  sent: number;
+  lastSent?: string;
+  state: "active" | "replied" | "done" | "out";
+  reply?: ReplyKind;
+  repliedOn?: string;
+  pump?: string;
+  quote?: string;
+  dealId?: string;
+};
+
+export type CampaignStep = { day: number; subject: string; body: string };
+export type Campaign = {
+  id: string;
+  name: string;
+  audience: AudienceKey;
+  segment: Segment | "All";
+  status: "Draft" | "Running" | "Paused" | "Finished";
+  started?: string;
+  steps: CampaignStep[];
+  recipients: Recipient[];
+};
+
+export type MailReply = {
+  id: string;
+  campaignId: string;
+  contactId: string;
+  kind: ReplyKind;
+  text: string;
+  at: number;
+  done: boolean;
+  title: string;
+  pumpType: PumpType;
+  estimate: number;
+};
+
 export type Member = { id: string; name: string; role: string; tone: string };
 
 export type State = {
@@ -132,4 +190,7 @@ export type State = {
   events: CalEvent[];
   activity: Activity[];
   inbox: InboxItem[];
+  prospects: Prospect[];
+  campaigns: Campaign[];
+  replies: MailReply[];
 };

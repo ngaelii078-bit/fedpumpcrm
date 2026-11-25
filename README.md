@@ -17,6 +17,7 @@ npm run demo     # serves out/ locally
 ## Where things are
 - `src/lib/data.ts` customers, quotes, jobs, invoices, calendar
 - `src/lib/pumps.ts` the pump section drawings and findings
+- `src/lib/outreach.ts` email templates, audiences, pre-send check
 - `src/views/` one file per page
 - `src/app/globals.css` all styling
 - `TASTE.md` design brief and guardrails

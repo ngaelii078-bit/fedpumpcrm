@@ -2,11 +2,12 @@
 import { createContext, ReactNode, useCallback, useContext, useEffect, useMemo, useReducer, useRef, useState } from "react";
 import { JOB_STAGES, ME, probOf, seed, stageOf } from "./data";
 import { addDays, iso, today } from "./format";
+import { contactOf, playDay } from "./outreach";
 import { partsFor } from "./pumps";
-import type { CalEvent, Customer, Deal, DealStatus, Job, State } from "./types";
+import type { AudienceKey, CalEvent, Campaign, CampaignStep, Customer, Deal, DealStatus, Job, Segment, State } from "./types";
 
 type NewDeal = Pick<Deal, "title" | "customerId" | "value" | "service" | "pumpType" | "urgency" | "source"> & { closesIn: number };
-type NewCustomer = Pick<Customer, "contact" | "role" | "company" | "segment" | "town" | "phone" | "email">;
+type NewCustomer = Pick<Customer, "contact" | "role" | "company" | "segment" | "town" | "phone" | "email"> & Partial<Pick<Customer, "source">>;
 
 type Action =
   | { t: "set"; state: State }
@@ -19,7 +20,14 @@ type Action =
   | { t: "pay"; id: string }
   | { t: "remind"; id: string }
   | { t: "addEvent"; event: CalEvent }
-  | { t: "inboxDone"; id: string };
+  | { t: "inboxDone"; id: string }
+  | { t: "addCampaign"; c: Campaign }
+  | { t: "campaign"; id: string; patch: Partial<Campaign> }
+  | { t: "step"; id: string; i: number; patch: Partial<CampaignStep> }
+  | { t: "startCampaign"; id: string }
+  | { t: "stopRecipient"; id: string; who: string }
+  | { t: "replyDone"; id: string; dealId?: string; customerId?: string }
+  | { t: "optOut"; id: string; on: boolean };
 
 const uid = () => Math.random().toString(36).slice(2, 9);
 
@@ -125,6 +133,53 @@ function reduce(s: State, a: Action): State {
       return { ...s, events: [...s.events, a.event], activity: log(s, `booked ${a.event.kind.toLowerCase()}: ${a.event.title}`, a.event.customerId) };
     case "inboxDone":
       return { ...s, inbox: s.inbox.map((m) => (m.id === a.id ? { ...m, done: true } : m)) };
+    case "addCampaign":
+      return { ...s, campaigns: [a.c, ...s.campaigns], activity: log(s, `created the campaign ${a.c.name}`) };
+    case "campaign":
+      return { ...s, campaigns: s.campaigns.map((c) => (c.id === a.id ? { ...c, ...a.patch } : c)) };
+    case "step":
+      return { ...s, campaigns: s.campaigns.map((c) => (c.id === a.id ? { ...c, steps: c.steps.map((x, i) => (i === a.i ? { ...x, ...a.patch } : x)) } : c)) };
+    case "startCampaign": {
+      const c = s.campaigns.find((x) => x.id === a.id);
+      if (!c || c.status === "Running") return s;
+      const ids = new Set(c.recipients.filter((r) => r.state === "active" && r.sent === 0).map((r) => r.id));
+      return {
+        ...s,
+        campaigns: s.campaigns.map((x) =>
+          x.id === a.id
+            ? { ...x, status: "Running" as const, started: x.started ?? today(), recipients: x.recipients.map((r) => (ids.has(r.id) ? { ...r, sent: 1, lastSent: today() } : r)) }
+            : x,
+        ),
+        prospects: s.prospects.map((p) => (ids.has(p.id) && p.status === "new" ? { ...p, status: "emailed" as const } : p)),
+        activity: log(s, `started ${c.name}, ${ids.size} first emails`),
+      };
+    }
+    case "stopRecipient":
+      return { ...s, campaigns: s.campaigns.map((c) => (c.id === a.id ? { ...c, recipients: c.recipients.map((r) => (r.id === a.who ? { ...r, state: "done" as const } : r)) } : c)) };
+    case "replyDone": {
+      const m = s.replies.find((x) => x.id === a.id);
+      if (!m) return s;
+      return {
+        ...s,
+        replies: s.replies.map((x) => (x.id === a.id ? { ...x, done: true } : x)),
+        campaigns: a.dealId
+          ? s.campaigns.map((c) => (c.id === m.campaignId ? { ...c, recipients: c.recipients.map((r) => (r.id === m.contactId ? { ...r, dealId: a.dealId } : r)) } : c))
+          : s.campaigns,
+        prospects: a.customerId ? s.prospects.map((p) => (p.id === m.contactId ? { ...p, status: "customer" as const, customerId: a.customerId } : p)) : s.prospects,
+      };
+    }
+    case "optOut": {
+      const k = contactOf(s, a.id);
+      if (!k) return s;
+      return {
+        ...s,
+        customers: s.customers.map((c) => (c.id === a.id ? { ...c, optOut: a.on, outSince: a.on ? today() : undefined } : c)),
+        prospects: s.prospects.map((p) => (p.id === a.id && a.on ? { ...p, status: "out" as const, outSince: today() } : p)),
+        campaigns: a.on ? s.campaigns.map((c) => ({ ...c, recipients: c.recipients.map((r) => (r.id === a.id ? { ...r, state: "out" as const } : r)) })) : s.campaigns,
+        replies: a.on ? s.replies.map((m) => (m.contactId === a.id && m.kind === "stop" ? { ...m, done: true } : m)) : s.replies,
+        activity: log(s, a.on ? `took ${k.company} off the mailing list` : `put ${k.company} back on the mailing list`, k.kind === "customer" ? a.id : undefined),
+      };
+    }
   }
 }
 
@@ -142,6 +197,8 @@ type Ctx = {
   dismiss: (id: string) => void;
   reset: () => void;
   customer: (id: string) => Customer;
+  playCampaign: (id: string) => void;
+  convertReply: (id: string) => string | undefined;
   /* overlays */
   open: Overlay | null;
   setOpen: (o: Overlay | null) => void;
@@ -153,13 +210,14 @@ export type Overlay =
   | { k: "newDeal"; customerId?: string; title?: string; pumpType?: Deal["pumpType"] }
   | { k: "newCustomer" }
   | { k: "newEvent"; date?: string; start?: number }
-  | { k: "message"; customerId: string; text: string; channel: "WhatsApp" | "Email" }
+  | { k: "message"; customerId: string; text: string; channel: "WhatsApp" | "Email"; done?: () => void }
+  | { k: "newCampaign"; audience?: AudienceKey; segment?: Segment }
   | { k: "call"; customerId?: string }
   | { k: "search" };
 
 const C = createContext<Ctx | null>(null);
-const KEY = "fedpump-crm-demo-v4";
-const EMPTY: State = { seedDay: "", deals: [], customers: [], jobs: [], invoices: [], events: [], activity: [], inbox: [] };
+const KEY = "fedpump-crm-demo-v7";
+const EMPTY: State = { seedDay: "", deals: [], customers: [], jobs: [], invoices: [], events: [], activity: [], inbox: [], prospects: [], campaigns: [], replies: [] };
 
 export function StoreProvider({ children }: { children: ReactNode }) {
   const [s, raw] = useReducer(reduce, EMPTY);
@@ -230,10 +288,41 @@ export function StoreProvider({ children }: { children: ReactNode }) {
     const id = "c" + uid();
     raw({
       t: "addCustomer",
-      customer: { ...n, id, score: 50, starred: false, source: "Phone", since: today(), lastContact: today(), pumps: [] },
+      customer: { source: "Phone", ...n, id, score: 50, starred: false, since: today(), lastContact: today(), pumps: [] },
     });
     return id;
   }, []);
+
+  const playCampaign = useCallback(
+    (id: string) => {
+      const before = ref.current;
+      const r = playDay(before, id);
+      raw({ t: "set", state: r.state });
+      const undo = () => raw({ t: "set", state: before });
+      if (r.finished) toast("Nothing left to send. Campaign finished.", undo);
+      else toast(`${r.sent} emails logged, ${r.replies} ${r.replies === 1 ? "reply" : "replies"} in. Demo only, nothing was sent.`, undo);
+    },
+    [toast],
+  );
+
+  /* a reply becomes a quote, and a prospect becomes a customer on the way */
+  const convertReply = useCallback(
+    (id: string) => {
+      const st = ref.current;
+      const m = st.replies.find((x) => x.id === id);
+      const k = m && contactOf(st, m.contactId);
+      if (!m || !k) return;
+      const customerId =
+        k.kind === "customer"
+          ? k.id
+          : addCustomer({ contact: k.name, role: k.role, company: k.company, segment: k.segment, town: k.town, phone: "Not given", email: k.email, source: "Outreach" });
+      const dealId = addDeal({ title: m.title, customerId, value: m.estimate, service: "Pump refurbishment", pumpType: m.pumpType, urgency: "planned", source: "Outreach", closesIn: 14 });
+      raw({ t: "replyDone", id, dealId, customerId: k.kind === "prospect" ? customerId : undefined });
+      toast(`${dealId} added to Enquiry${k.kind === "prospect" ? `, and ${k.company} is now a customer` : ""}.`);
+      return dealId;
+    },
+    [addCustomer, addDeal, toast],
+  );
 
   const reset = useCallback(() => {
     raw({ t: "set", state: seed() });
@@ -241,8 +330,8 @@ export function StoreProvider({ children }: { children: ReactNode }) {
   }, [toast]);
 
   const value = useMemo<Ctx>(
-    () => ({ s, ready, dispatch, moveDeal, addDeal, addCustomer, toast, toasts, dismiss, reset, customer, open, setOpen }),
-    [s, ready, dispatch, moveDeal, addDeal, addCustomer, toast, toasts, dismiss, reset, customer, open],
+    () => ({ s, ready, dispatch, moveDeal, addDeal, addCustomer, toast, toasts, dismiss, reset, customer, playCampaign, convertReply, open, setOpen }),
+    [s, ready, dispatch, moveDeal, addDeal, addCustomer, toast, toasts, dismiss, reset, customer, playCampaign, convertReply, open],
   );
   return <C.Provider value={value}>{children}</C.Provider>;
 }

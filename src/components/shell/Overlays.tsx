@@ -6,7 +6,9 @@ import { CalendarPlus, Check, Factory, FileText, Mail, MessageCircle, Phone, Sea
 import { EVENT_KINDS, ME, PUMP_TYPES, SEGMENTS, SERVICES, STAGES, TEAM, probOf, stageOf } from "@/lib/data";
 import { ago, daysBetween, fmtDay, fmtFull, fmtSoon, relDay, today, zar, zarK } from "@/lib/format";
 import { VAT, isOpen, nextRefurb, sum, useStore } from "@/lib/store";
-import type { CalEvent, Customer, Deal, EventKind, PumpType, Segment, Service, Source, Urgency } from "@/lib/types";
+import { AUDIENCES, buildAudience, stepsFor } from "@/lib/outreach";
+import { Paper } from "@/views/OutreachBits";
+import type { AudienceKey, CalEvent, Campaign, Customer, Deal, EventKind, PumpType, Segment, Service, Source, Urgency } from "@/lib/types";
 import { Avatar, Avatars, Empty, Initials, reduced, useIso } from "../ui/bits";
 import { lenisStop } from "./lenis";
 
@@ -76,13 +78,13 @@ function Drawer({ label, children, footer, head, onClose }: { label: string; hea
   );
 }
 
-function Modal({ label, children, onClose, top }: { label: string; children: (leave: () => void) => ReactNode; onClose: () => void; top?: boolean }) {
+function Modal({ label, children, onClose, top, wide }: { label: string; children: (leave: () => void) => ReactNode; onClose: () => void; top?: boolean; wide?: boolean }) {
   const ref = useRef<HTMLDivElement>(null);
   const leave = useDialog(ref, onClose, RISE);
   return (
     <>
       <div className="scrim" onClick={leave} />
-      <div className={"modal" + (top ? " top" : "")} ref={ref} role="dialog" aria-modal="true" aria-label={label} data-lenis-prevent>{children(leave)}</div>
+      <div className={"modal" + (top ? " top" : "") + (wide ? " wide" : "")} ref={ref} role="dialog" aria-modal="true" aria-label={label} data-lenis-prevent>{children(leave)}</div>
     </>
   );
 }
@@ -233,6 +235,11 @@ function CustomerDrawer({ id, onClose }: { id: string; onClose: () => void }) {
         <dt className="muted">Email</dt><dd style={{ overflowWrap: "anywhere" }}>{c.email}</dd>
         <dt className="muted">Last contact</dt><dd>{relDay(c.lastContact)}</dd>
         <dt className="muted">Customer since</dt><dd>{fmtFull(c.since)}</dd>
+        <dt className="muted">Outreach email</dt>
+        <dd style={{ display: "flex", gap: 10, alignItems: "center" }}>
+          {c.optOut ? "Off the list" : "Allowed"}
+          <button className="btn sm" style={{ height: 28 }} onClick={() => dispatch({ t: "optOut", id, on: !c.optOut })}>{c.optOut ? "Allow again" : "Take off list"}</button>
+        </dd>
       </dl>
       <Sub>Pump register</Sub>
       {c.pumps.length === 0 && <Empty>No pumps on record yet.</Empty>}
@@ -409,16 +416,18 @@ function NewEvent({ preset, onClose }: { preset: { date?: string; start?: number
   );
 }
 
-function Message({ o, onClose }: { o: { customerId: string; text: string; channel: "WhatsApp" | "Email" }; onClose: () => void }) {
-  const { customer, dispatch, toast } = useStore();
-  const c = customer(o.customerId);
+function Message({ o, onClose }: { o: { customerId: string; text: string; channel: "WhatsApp" | "Email"; done?: () => void }; onClose: () => void }) {
+  const { s, customer, dispatch, toast } = useStore();
+  const pr = s.prospects.find((x) => x.id === o.customerId);
+  const c = pr ? { id: pr.id, contact: pr.contact, company: pr.company, email: pr.email, phone: "" } : customer(o.customerId);
   const [text, setText] = useState(o.text);
   return (
     <Modal label={`${o.channel} message`} onClose={onClose}>
       {(leave) => (
         <form onSubmit={(e) => {
           e.preventDefault();
-          dispatch({ t: "log", text: `sent ${o.channel === "Email" ? "an email" : "a WhatsApp"} to ${c.contact}`, customerId: c.id });
+          dispatch({ t: "log", text: `sent ${o.channel === "Email" ? "an email" : "a WhatsApp"} to ${c.contact}`, customerId: pr ? undefined : c.id });
+          o.done?.();
           toast(`Logged on ${c.company}. Demo only, nothing was sent.`);
           leave();
         }}>
@@ -428,6 +437,74 @@ function Message({ o, onClose }: { o: { customerId: string; text: string; channe
           <div style={{ display: "flex", gap: 10, justifyContent: "flex-end", marginTop: 16 }}>
             <button type="button" className="btn" onClick={leave}>Cancel</button>
             <button className="btn gold" disabled={!text.trim()}>Send</button>
+          </div>
+        </form>
+      )}
+    </Modal>
+  );
+}
+
+/* ---------------- new campaign ---------------- */
+function NewCampaign({ preset, onClose }: { preset: { audience?: AudienceKey; segment?: Segment }; onClose: () => void }) {
+  const { s, dispatch, toast } = useStore();
+  const router = useRouter();
+  const [aud, setAud] = useState<AudienceKey>(preset.audience ?? "due");
+  const [seg, setSeg] = useState<Segment | "All">(preset.segment ?? (preset.audience === "prospects" ? "Agriculture" : "All"));
+  const [name, setName] = useState("");
+  const cold = aud === "prospects";
+  const built = useMemo(() => buildAudience(s, aud, seg), [s, aud, seg]);
+  const steps = useMemo(() => stepsFor(aud, seg === "All" ? "Mining" : seg), [aud, seg]);
+  const auto = `${AUDIENCES[aud].name}${seg === "All" ? "" : ", " + seg.toLowerCase()}`;
+  const save = (start: boolean) => {
+    const c: Campaign = { id: "k" + Date.now().toString(36), name: name.trim() || auto, audience: aud, segment: seg, status: "Draft", steps, recipients: built.list };
+    dispatch({ t: "addCampaign", c });
+    if (start) dispatch({ t: "startCampaign", id: c.id });
+    toast(start ? `${c.name} started. ${c.recipients.length} emails logged, nothing was sent.` : `${c.name} saved as a draft.`);
+    onClose();
+    if (window.location.pathname.startsWith("/outreach")) window.location.hash = c.id;
+    else router.push("/outreach/#" + c.id);
+  };
+  return (
+    <Modal label="New campaign" onClose={onClose} wide>
+      {(leave) => (
+        <form onSubmit={(e) => { e.preventDefault(); save(true); }}>
+          <H leave={leave}>New campaign</H>
+          <div className="newcamp">
+            <div style={{ display: "grid", gap: 14, alignContent: "start" }}>
+              <Field label="Campaign name"><input data-autofocus className="inp" value={name} onChange={(e) => setName(e.target.value)} placeholder={auto} /></Field>
+              <fieldset style={{ display: "grid", gap: 8 }}>
+                <legend className="lab">Who gets it</legend>
+                {(Object.keys(AUDIENCES) as AudienceKey[]).map((k) => {
+                  const kSeg = k === "prospects" ? (seg === "All" ? "Agriculture" : seg) : k === aud ? seg : "All";
+                  const n = buildAudience(s, k, kSeg).list.length;
+                  return (
+                    <label key={k} className={"pick" + (aud === k ? " on" : "")}>
+                      <input type="radio" name="aud" checked={aud === k} onChange={() => { setAud(k); setSeg(k === "prospects" ? "Agriculture" : "All"); }} />
+                      <span style={{ flex: 1, minWidth: 0 }}><b style={{ fontWeight: 600 }}>{AUDIENCES[k].name}</b><span className="small muted" style={{ display: "block" }}>{AUDIENCES[k].blurb}</span></span>
+                      <span className="display tnum" style={{ fontWeight: 600, fontSize: 18 }}>{n}</span>
+                    </label>
+                  );
+                })}
+              </fieldset>
+              <Field label={cold ? "Industry, one per list" : "Industry"}>
+                <select className="inp" value={seg} onChange={(e) => setSeg(e.target.value as Segment | "All")}>
+                  {!cold && <option value="All">All industries</option>}
+                  {SEGMENTS.map((x) => <option key={x}>{x}</option>)}
+                </select>
+              </Field>
+              <p className="small muted">
+                {cold ? "Prospects get one email that asks permission. Follow ups open only when they reply." : `${steps.length} emails over ${steps[steps.length - 1].day} days. It stops for anyone who replies.`}
+                {(built.out > 0 || built.inUse > 0) && ` Left out: ${[built.out ? `${built.out} off the list` : "", built.inUse ? `${built.inUse} already in a campaign` : ""].filter(Boolean).join(", ")}.`}
+              </p>
+            </div>
+            <div style={{ minWidth: 0 }}>
+              <span className="lab">First email, as it will read</span>
+              {built.list.length ? <Paper step={steps[0]} list={built.list} /> : <div className="panel"><Empty>Nobody fits this list right now.</Empty></div>}
+            </div>
+          </div>
+          <div style={{ display: "flex", gap: 10, justifyContent: "flex-end", marginTop: 18, flexWrap: "wrap" }}>
+            <button type="button" className="btn" disabled={!built.list.length} onClick={() => save(false)}>Save draft</button>
+            <button className="btn gold" disabled={!built.list.length}>Start with {built.list.length}</button>
           </div>
         </form>
       )}
@@ -474,7 +551,7 @@ function SearchBox({ onClose }: { onClose: () => void }) {
     const t = q.trim().toLowerCase();
     const out: { key: string; icon: ReactNode; a: string; b: string; go: () => void }[] = [];
     const hit = (...x: string[]) => x.some((v) => v.toLowerCase().includes(t));
-    for (const [n, href] of [["Overview", "/"], ["Pipeline", "/pipeline/"], ["Customers", "/customers/"], ["Schedule", "/schedule/"], ["Workshop", "/workshop/"], ["Finance", "/finance/"], ["Reports", "/reports/"]])
+    for (const [n, href] of [["Overview", "/"], ["Pipeline", "/pipeline/"], ["Customers", "/customers/"], ["Outreach", "/outreach/"], ["Schedule", "/schedule/"], ["Workshop", "/workshop/"], ["Finance", "/finance/"], ["Reports", "/reports/"]])
       if (!t || hit(n)) out.push({ key: href, icon: <FileText size={16} />, a: n, b: "Page", go: () => { onClose(); router.push(href); } });
     s.customers.filter((c) => t && hit(c.contact, c.company, c.town, c.segment, ...c.pumps.map((p) => p.tag))).slice(0, 5).forEach((c: Customer) =>
       out.push({ key: c.id, icon: <User size={16} />, a: c.company, b: `${c.contact}, ${c.town}`, go: () => setOpen({ k: "customer", id: c.id }) }));
@@ -524,6 +601,7 @@ export function Overlays() {
       {open?.k === "newCustomer" && <NewCustomer onClose={close} />}
       {open?.k === "newEvent" && <NewEvent preset={open} onClose={close} />}
       {open?.k === "message" && <Message o={open} onClose={close} />}
+      {open?.k === "newCampaign" && <NewCampaign preset={open} onClose={close} />}
       {open?.k === "call" && <LogCall preset={open.customerId} onClose={close} />}
       {open?.k === "search" && <SearchBox onClose={close} />}
       <div className="toasts" aria-live="polite">

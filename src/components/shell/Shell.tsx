@@ -5,8 +5,8 @@ import { usePathname, useRouter } from "next/navigation";
 import gsap from "gsap";
 import Lenis from "lenis";
 import {
-  Banknote, Bell, CalendarDays, ChartColumn, Factory, Globe, Inbox, KanbanSquare, LayoutDashboard, Mail, Menu,
-  MessageCircle, Moon, Phone, Plus, RotateCcw, Search, Siren, Sun, Upload, Users, Wrench,
+  Banknote, Bell, CalendarDays, ChartColumn, Factory, Globe, Inbox, KanbanSquare, LayoutDashboard, Mail, Menu, Reply,
+  MessageCircle, Moon, Phone, Plus, RotateCcw, Search, Send, Siren, Sun, Upload, Users, Wrench,
 } from "lucide-react";
 import { ME, stageOf } from "@/lib/data";
 import { ago, daysBetween, downloadCsv, fmtDay, today, zarK } from "@/lib/format";
@@ -19,11 +19,14 @@ const NAV = [
   { href: "/", label: "Overview", icon: LayoutDashboard },
   { href: "/pipeline/", label: "Pipeline", icon: KanbanSquare },
   { href: "/customers/", label: "Customers", icon: Users },
+  { href: "/outreach/", label: "Outreach", icon: Send },
   { href: "/schedule/", label: "Schedule", icon: CalendarDays },
   { href: "/workshop/", label: "Workshop", icon: Factory },
   { href: "/finance/", label: "Finance", icon: Banknote },
   { href: "/reports/", label: "Reports", icon: ChartColumn },
 ];
+const DOCK = ["/", "/pipeline/", "/customers/", "/workshop/"].map((h) => NAV.find((n) => n.href === h)!);
+const MORE = NAV.filter((n) => !DOCK.includes(n));
 const norm = (p: string) => (p === "/" ? "/" : p.replace(/\/?$/, "/"));
 
 /* Active pill: the leading edge leaves first, the trailing edge catches up. */
@@ -136,6 +139,8 @@ function BellPop({ push }: { push: (h: string) => void }) {
       out.push({ k: d.id, icon: <Siren size={16} />, a: `Breakdown: ${d.title}`, b: `${customer(d.customerId)?.company}, ${stageOf(d.status)!.name}`, go: () => setOpen({ k: "deal", id: d.id }) }));
     s.jobs.filter((j) => j.done < 6 && daysBetween(t, j.due) <= 1).forEach((j) =>
       out.push({ k: j.id, icon: <Wrench size={16} />, a: `${j.id} due ${j.due === t ? "today" : "tomorrow"}`, b: `${j.title}, ${j.done} of 6 stages`, go: () => push("/workshop/#" + j.id) }));
+    const waiting = s.replies.filter((m) => !m.done);
+    if (waiting.length) out.push({ k: "rep", icon: <Reply size={16} />, a: `${waiting.length} outreach ${waiting.length === 1 ? "reply" : "replies"} waiting`, b: "Aim to answer within 5 minutes", go: () => push("/outreach/") });
     const od = s.invoices.filter((i) => i.status === "Overdue");
     if (od.length) out.push({ k: "od", icon: <Banknote size={16} />, a: `${od.length} invoices overdue`, b: `${zarK(od.reduce((a, i) => a + i.amount * VAT, 0))} incl. VAT`, go: () => push("/finance/") });
     const due = s.customers.flatMap((c) => c.pumps.map((p) => ({ c, p, n: nextRefurb(p) }))).filter((x) => daysBetween(t, x.n) <= 30);
@@ -259,6 +264,7 @@ export function Shell({ children }: { children: ReactNode }) {
     { l: "Log a call", i: Phone, f: () => setOpen({ k: "call" }) },
     { l: "Book a slot", i: CalendarDays, f: () => setOpen({ k: "newEvent" }) },
     { l: "WhatsApp a customer", i: MessageCircle, f: () => { const c = s.customers[0]; if (c) setOpen({ k: "message", customerId: c.id, channel: "WhatsApp", text: `Good day ${c.contact.split(" ")[0]}, ` }); } },
+    { l: "New campaign", i: Send, f: () => setOpen({ k: "newCampaign" }) },
     { l: "Export pipeline", i: Upload, f: exportAll },
   ];
   const tail = [
@@ -303,14 +309,14 @@ export function Shell({ children }: { children: ReactNode }) {
           <main ref={main} key={path} style={{ minHeight: "70vh" }}>{ready ? children : <p className="sr">Loading</p>}</main>
         </div>
         <nav className="dock" aria-label="Main, mobile" ref={more.ref as never}>
-          {[NAV[0], NAV[1], NAV[2], NAV[4]].map((n) => (
+          {DOCK.map((n) => (
             <Link key={n.href} href={n.href} aria-current={path === n.href ? "page" : undefined} onClick={(e) => go(e, n.href)}><n.icon size={19} />{n.label}</Link>
           ))}
-          <a href="#more" role="button" aria-expanded={more.on} onClick={(e) => { e.preventDefault(); more.set(!more.on); }} aria-current={[NAV[3], NAV[5], NAV[6]].some((n) => n.href === path) ? "page" : undefined}><Menu size={19} />More</a>
+          <a href="#more" role="button" aria-expanded={more.on} onClick={(e) => { e.preventDefault(); more.set(!more.on); }} aria-current={MORE.some((n) => n.href === path) ? "page" : undefined}><Menu size={19} />More</a>
           {more.on && (
             <div className="pop" style={{ bottom: "calc(100% + 10px)", top: "auto" }}>
               <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8 }}>
-                {[NAV[3], NAV[5], NAV[6]].map((n) => (
+                {MORE.map((n) => (
                   <Link key={n.href} href={n.href} className="btn" style={{ flexDirection: "row", fontSize: 13.5 }} onClick={(e) => go(e, n.href)}><n.icon size={16} />{n.label}</Link>
                 ))}
                 {[tools[0], tools[1], tools[2], ...tail].map((t) => (

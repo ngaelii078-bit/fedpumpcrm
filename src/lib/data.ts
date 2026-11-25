@@ -1,4 +1,5 @@
 import { addDays, addMonths, iso, mondayOf, monthStart } from "./format";
+import { seedOutreach } from "./outreach";
 import { partsFor } from "./pumps";
 import type {
   Activity, CalEvent, Customer, Deal, DealStatus, EventKind, InboxItem, Invoice, Job, Member,
@@ -28,7 +29,7 @@ export const probOf = (s: DealStatus) => (s === "won" ? 1 : s === "lost" ? 0 : s
 export const JOB_STAGES = ["Receive", "Strip", "Inspect", "Machine", "Assemble", "QC & handover"];
 export const MONTH_TARGET = 900000;
 export const SEGMENTS: Segment[] = ["Mining", "Manufacturing", "Agriculture", "Water"];
-export const SOURCES: Source[] = ["Repeat", "Referral", "WhatsApp", "Website", "Phone"];
+export const SOURCES: Source[] = ["Repeat", "Referral", "WhatsApp", "Website", "Phone", "Outreach"];
 export const SERVICES: Service[] = [
   "Pump refurbishment", "Inspection & assessment", "Component reconditioning", "Precision machining",
 ];
@@ -39,7 +40,7 @@ export const SEG_COLOR: Record<Segment, string> = {
   Mining: "#BF8632", Manufacturing: "#4A90D9", Agriculture: "#E0603A", Water: "#2FA37A",
 };
 export const SRC_COLOR: Record<Source, string> = {
-  Repeat: "#BF8632", Referral: "#4A90D9", WhatsApp: "#E0603A", Website: "#2FA37A", Phone: "#B070C4",
+  Repeat: "#BF8632", Referral: "#4A90D9", WhatsApp: "#E0603A", Website: "#2FA37A", Phone: "#B070C4", Outreach: "#8F9A3A",
 };
 
 export const MACHINES = [
@@ -342,7 +343,9 @@ export function seed(now = new Date()): State {
     { id: "m3", channel: "Email", from: "Ruth Adams, Copperleaf Chemicals", customerId: "c7", text: "Please quote six wear rings in bronze to the attached drawing.", at: at(188), service: "Precision machining", pumpType: "Multistage", estimate: 34800, urgency: "planned", title: "Bronze wear rings x6", done: false },
   ];
 
-  return { seedDay: iso(t0), deals, customers, jobs, invoices, events, activity, inbox };
+  const outreach = seedOutreach(t0, now, customers, deals);
+
+  return { seedDay: iso(t0), deals, customers, jobs, invoices, events, activity, inbox, ...outreach };
 }
 
 const today0 = (d: Date) => iso(d);

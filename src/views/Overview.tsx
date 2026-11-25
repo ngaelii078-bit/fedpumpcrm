@@ -1,7 +1,7 @@
 "use client";
 import { useMemo, useState } from "react";
 import Link from "next/link";
-import { ArrowUpRight, ChartNoAxesColumn, Plus, Table2, Target, Trophy } from "lucide-react";
+import { ArrowUpRight, ChartNoAxesColumn, Plus, Send, Table2, Target, Trophy } from "lucide-react";
 import { JOB_STAGES, MONTH_TARGET, STAGES, TEAM, probOf } from "@/lib/data";
 import { ago, daysBetween, fmtDay, monthLabel, monthStart, pct, relDay, today, zar, zarAxis, zarK } from "@/lib/format";
 import { inMonth, isOpen, nextRefurb, sum, useStore, winRate } from "@/lib/store";
@@ -146,7 +146,7 @@ export default function Overview() {
           </ul>
         </Panel>
 
-        <Panel className="ov-due" title="Refurbs coming due" sub="next 75 days">
+        <Panel className="ov-due" title="Refurbs coming due" sub="next 75 days" actions={<button className="btn sm" onClick={() => setOpen({ k: "newCampaign", audience: "due" })}><Send size={14} /> Email all</button>}>
           <ul style={{ display: "grid", gap: 4 }}>
             {due.slice(0, 5).map(({ c, p, next, left }) => (
               <li key={p.tag} className="rowlink" style={{ cursor: "default" }}>
