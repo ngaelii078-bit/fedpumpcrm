@@ -1,12 +1,15 @@
 export type Stage = "enquiry" | "inspect" | "quoted" | "po";
 export type DealStatus = Stage | "won" | "lost";
-export type Segment = "Mining" | "Manufacturing" | "Agriculture" | "Water";
-export type PumpType = "Multistage" | "Slurry" | "Submersible";
+export type Segment = "Retail" | "Manufacturing" | "E-commerce" | "Services";
+export type PumpType = "Domestic" | "International" | "Freight";
 export type Service =
-  | "Pump refurbishment"
-  | "Inspection & assessment"
-  | "Component reconditioning"
-  | "Precision machining";
+  | "Nationwide courier"
+  | "Strategic assessment"
+  | "International courier"
+  | "Transport & warehousing"
+  | "Air sea & customs"
+  | "E-commerce logistics"
+  | "Mailroom management";
 export type Urgency = "planned" | "breakdown" | "shutdown";
 export type Source = "Repeat" | "Referral" | "WhatsApp" | "Website" | "Phone" | "Outreach";
 
@@ -87,7 +90,7 @@ export type Invoice = {
   reminded?: boolean;
 };
 
-export type EventKind = "Site visit" | "Collection" | "Inspection" | "Delivery" | "Call-out";
+export type EventKind = "Strategy call" | "Partner meeting" | "Assessment" | "Service review" | "Follow-up";
 export type CalEvent = {
   id: string;
   kind: EventKind;

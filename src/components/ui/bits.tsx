@@ -50,18 +50,15 @@ export const Avatars = ({ ids, size = 25 }: { ids: string[]; size?: number }) =>
   <span className="avs">{ids.map((i) => <Avatar key={i} id={i} size={size} />)}</span>
 );
 
-const SEG_TONE: Record<string, string> = { Mining: "#F4D9B4", Manufacturing: "#C4DDF2", Agriculture: "#F3C7B5", Water: "#CBE6D5" };
+const SEG_TONE: Record<string, string> = { Retail: "#F4D9B4", Manufacturing: "#C4DDF2", "E-commerce": "#F3C7B5", Services: "#CBE6D5" };
 export const Initials = ({ name, segment, size = 46 }: { name: string; segment: string; size?: number }) => (
   <span className="av" style={{ width: size, height: size, background: SEG_TONE[segment], fontSize: size * 0.33 }}>
     {name.split(" ").map((w) => w[0]).slice(0, 2).join("")}
   </span>
 );
 
-/**
- * The Fedpump flange. Six bolts, filled in star order the way a fitter torques
- * a real flange, so progress always pulls down evenly.
- */
-const STAR = [0, 3, 1, 4, 2, 5];
+/** Six milestones in the service coordination process. */
+const STAR = [0, 1, 2, 3, 4, 5];
 export function Flange({ done, size = 44, children, ring = true, color = "var(--gold)" }: {
   done: number; size?: number; children?: ReactNode; ring?: boolean; color?: string;
 }) {
@@ -82,25 +79,20 @@ export function Flange({ done, size = 44, children, ring = true, color = "var(--
     };
   }, [done]);
   const R = 50;
-  const hex = (cx: number, cy: number, r: number) =>
-    Array.from({ length: 6 }, (_, k) => {
-      const a = (Math.PI / 3) * k;
-      return `${(cx + r * Math.cos(a)).toFixed(2)},${(cy + r * Math.sin(a)).toFixed(2)}`;
-    }).join(" ");
   return (
     <span style={{ position: "relative", width: size, height: size, display: "inline-grid", placeItems: "center", flex: "none" }}>
       <svg ref={ref} viewBox="0 0 100 100" width={size} height={size} aria-hidden="true" style={{ position: "absolute", inset: 0, overflow: "visible" }}>
-        {ring && <circle cx="50" cy="50" r="48" fill="none" stroke="rgba(243,240,233,.3)" strokeWidth="2.4" />}
-        {ring && <circle cx="50" cy="50" r="24" fill="none" stroke="rgba(243,240,233,.3)" strokeWidth="2" />}
+        {ring && <circle cx="50" cy="50" r="48" fill="none" stroke="var(--chart-guide)" strokeWidth="2.4" />}
+        {ring && <circle cx="50" cy="50" r="24" fill="none" stroke="var(--chart-guide)" strokeWidth="2" />}
         {Array.from({ length: 6 }, (_, i) => {
           const a = (Math.PI / 3) * i - Math.PI / 2;
           const x = 50 + R * 0.72 * Math.cos(a);
           const y = 50 + R * 0.72 * Math.sin(a);
           const on = STAR.indexOf(i) < Math.floor(done);
           return on ? (
-            <polygon key={i} data-b={i} points={hex(x, y, 9.4)} fill={color} />
+            <circle key={i} data-b={i} cx={x} cy={y} r="7" fill={color} />
           ) : (
-            <circle key={i} data-b={i} cx={x} cy={y} r="6.2" fill="rgba(243,240,233,.1)" stroke="rgba(243,240,233,.38)" strokeWidth="1.8" />
+            <circle key={i} data-b={i} cx={x} cy={y} r="6.2" fill="var(--chart-track)" stroke="var(--chart-guide)" strokeWidth="1.8" />
           );
         })}
       </svg>

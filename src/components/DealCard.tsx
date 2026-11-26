@@ -93,7 +93,7 @@ export function DealCard({ deal, tone, showStage, className = "", onPointerDown 
       >
         <div className="top">
           {deal.urgency === "breakdown" ? (
-            <span className="urgent"><Siren size={14} /> Breakdown, {fmtDay(deal.closes)}</span>
+            <span className="urgent"><Siren size={14} /> Urgent, {fmtDay(deal.closes)}</span>
           ) : (
             <span>Closes {fmtDay(deal.closes)}</span>
           )}

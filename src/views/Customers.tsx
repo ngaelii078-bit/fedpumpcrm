@@ -7,7 +7,7 @@ import { daysBetween, downloadCsv, fmtDay, fmtSoon, int, relDay, today, zar, zar
 import { isOpen, nextRefurb, sum, useStore } from "@/lib/store";
 import { Empty, Initials, PageHead, Seg, reduced, useEnter } from "@/components/ui/bits";
 
-type Sort = "Refurb due" | "Last contacted" | "Open value";
+type Sort = "Review due" | "Last contacted" | "Open value";
 
 export default function Customers() {
   const { s, dispatch, setOpen } = useStore();
@@ -16,7 +16,7 @@ export default function Customers() {
   const [q, setQ] = useState("");
   const [seg, setSeg] = useState<string>("All");
   const [star, setStar] = useState(false);
-  const [sort, setSort] = useState<Sort>("Refurb due");
+  const [sort, setSort] = useState<Sort>("Review due");
   const [view, setView] = useState<"Grid" | "Table">("Grid");
 
   const rows = useMemo(() => {
@@ -30,7 +30,7 @@ export default function Customers() {
         return { c, open, next, left, used };
       })
       .filter(({ c }) => (seg === "All" || c.segment === seg) && (!star || c.starred) && (!t || `${c.contact} ${c.company} ${c.town} ${c.pumps.map((p) => p.tag).join(" ")}`.toLowerCase().includes(t)))
-      .sort((a, b) => (sort === "Refurb due" ? a.left - b.left : sort === "Open value" ? b.open - a.open : b.c.lastContact.localeCompare(a.c.lastContact)));
+      .sort((a, b) => (sort === "Review due" ? a.left - b.left : sort === "Open value" ? b.open - a.open : b.c.lastContact.localeCompare(a.c.lastContact)));
   }, [s.customers, s.deals, q, seg, star, sort]);
 
   const first = useRef(true);
@@ -47,8 +47,8 @@ export default function Customers() {
   const dueSoon = s.customers.flatMap((c) => c.pumps).filter((p) => daysBetween(today(), nextRefurb(p)) <= 30).length;
   const pumps = s.customers.reduce((a, c) => a + c.pumps.length, 0);
 
-  const csv = () => downloadCsv(`fedpump-customers-${today()}.csv`, [
-    ["Company", "Contact", "Role", "Industry", "Town", "Phone", "Email", "Open value", "Next refurb"],
+  const csv = () => downloadCsv(`lexbridge-customers-${today()}.csv`, [
+    ["Company", "Contact", "Role", "Industry", "Town", "Phone", "Email", "Open value", "Next review"],
     ...rows.map(({ c, open, next }) => [c.company, c.contact, c.role, c.segment, c.town, c.phone, c.email, open, next ? `${next.p.tag} ${fmtDay(next.d)}` : ""]),
   ]);
 
@@ -58,19 +58,19 @@ export default function Customers() {
         a="Customer"
         b="directory"
         kpis={[
-          { icon: <Users size={18} />, value: s.customers.length, format: int, label: `Customers, ${pumps} pumps on record` },
+          { icon: <Users size={18} />, value: s.customers.length, format: int, label: `Customers, ${pumps} service profiles on record` },
           { icon: <Phone size={18} />, value: week, format: int, label: "Contacted in the last 7 days" },
-          { icon: <RotateCcw size={18} />, value: dueSoon, format: int, label: "Pumps due for refurb in 30 days", chip: dueSoon ? <span className="chip orange">Call first</span> : undefined },
+          { icon: <RotateCcw size={18} />, value: dueSoon, format: int, label: "Service reviews due in 30 days", chip: dueSoon ? <span className="chip orange">Call first</span> : undefined },
         ]}
       />
       <div className="toolbar" data-enter>
-        <label className="field wide" style={{ width: 270 }}><Search size={16} /><input value={q} onChange={(e) => setQ(e.target.value)} placeholder="Name, company or pump tag" aria-label="Search customers" /></label>
+        <label className="field wide" style={{ width: 270 }}><Search size={16} /><input value={q} onChange={(e) => setQ(e.target.value)} placeholder="Name, company or service reference" aria-label="Search customers" /></label>
         {["All", ...SEGMENTS].map((x) => <button key={x} className="tag" aria-pressed={seg === x} onClick={() => setSeg(x)}>{x}</button>)}
         <button className="tag" aria-pressed={star} onClick={() => setStar(!star)}><Star size={14} fill={star ? "currentColor" : "none"} /> Starred</button>
         <span className="grow" />
         <label className="field" style={{ paddingRight: 8 }}><span className="sr">Sort by</span>
           <select value={sort} onChange={(e) => setSort(e.target.value as Sort)} style={{ background: "none", color: "var(--ink)", outline: "none" }}>
-            {(["Refurb due", "Last contacted", "Open value"] as Sort[]).map((x) => <option key={x} style={{ background: "#1a232c" }}>{x}</option>)}
+            {(["Review due", "Last contacted", "Open value"] as Sort[]).map((x) => <option key={x}>{x}</option>)}
           </select>
         </label>
         <Seg label="View" value={view} options={["Grid", "Table"] as const} onChange={setView} />
@@ -99,8 +99,8 @@ export default function Customers() {
               </div>
               <div>
                 <div className="small" style={{ display: "flex", justifyContent: "space-between", marginBottom: 6, gap: 8 }}>
-                  <span className="mono muted">{next ? next.p.tag : "No pumps yet"}</span>
-                  {next && <span className={left < 0 ? "" : "muted"} style={left < 0 ? { color: "var(--bad)", fontWeight: 600 } : undefined}>{left < 0 ? "Refurb overdue" : `Refurb ${fmtSoon(next.d)}`}</span>}
+                  <span className="mono muted">{next ? next.p.tag : "No service profiles yet"}</span>
+                  {next && <span className={left < 0 ? "" : "muted"} style={left < 0 ? { color: "var(--bad)", fontWeight: 600 } : undefined}>{left < 0 ? "Review overdue" : `Review ${fmtSoon(next.d)}`}</span>}
                 </div>
                 <div className={"meter" + (left < 30 ? " hot" : "")}><i style={{ width: `${used * 100}%` }} /></div>
               </div>
@@ -115,7 +115,7 @@ export default function Customers() {
       ) : (
         <div className="panel scrollx" style={{ padding: 6 }} ref={grid}>
           <table className="tbl" style={{ minWidth: 860 }}>
-            <thead><tr><th>Company</th><th>Contact</th><th>Industry</th><th>Town</th><th>Last contact</th><th>Next refurb</th><th className="r">Open quotes</th></tr></thead>
+            <thead><tr><th>Company</th><th>Contact</th><th>Industry</th><th>Town</th><th>Last contact</th><th>Next review</th><th className="r">Open quotes</th></tr></thead>
             <tbody>
               {rows.map(({ c, open, next, left }) => (
                 <tr key={c.id} data-click onClick={() => setOpen({ k: "customer", id: c.id })}>

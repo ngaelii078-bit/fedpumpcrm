@@ -216,7 +216,7 @@ const submersible: PartDef[] = [
     id: "stator", fig: "08", name: "Stator housing", kind: "cast",
     top: [[[-30, 70], [-30, 116], [196, 116], [196, 100], [176, 100], [176, 70], [0, 70], [0, 100], [-14, 100], [-14, 70]]],
     copies: [{ ax: 0, ex: 108 }],
-    findings: { reuse: "Insulation test passed", recondition: "Spigot worn, bore and sleeve", replace: "Water ingress, send for rewind" },
+    findings: { reuse: "Insulation test passed", recondition: "Spigot worn, bore and sleeve", replace: "Services ingress, send for rewind" },
   },
   {
     id: "bearing", fig: "09", name: "Top bearing cover", kind: "cast",
@@ -239,9 +239,9 @@ const submersible: PartDef[] = [
 ];
 
 export const PUMPS: Record<PumpType, PartDef[]> = {
-  Multistage: multistage,
-  Slurry: slurry,
-  Submersible: submersible,
+  Domestic: multistage,
+  International: slurry,
+  Freight: submersible,
 };
 
 const KEY: Record<string, Condition> = { o: "reuse", r: "recondition", x: "replace" };

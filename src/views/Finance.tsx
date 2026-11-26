@@ -8,8 +8,8 @@ import { Count, Empty, PageHead, Panel, useEnter } from "@/components/ui/bits";
 import { Cols } from "@/components/charts/charts";
 
 const ST: Record<InvoiceStatus, { c: string; icon: typeof Check }> = {
-  Draft: { c: "rgba(243,240,233,.76)", icon: FileText },
-  Sent: { c: "#A9CDEF", icon: Clock3 },
+  Draft: { c: "var(--ink-2)", icon: FileText },
+  Sent: { c: "var(--c2)", icon: Clock3 },
   Overdue: { c: "var(--bad)", icon: CircleAlert },
   Paid: { c: "var(--good)", icon: Check },
 };
@@ -60,7 +60,7 @@ export default function Finance() {
     })
     .sort((a, b) => (f === "Open" ? a.due.localeCompare(b.due) : b.id.localeCompare(a.id)));
 
-  const csv = () => downloadCsv(`fedpump-invoices-${t}.csv`, [
+  const csv = () => downloadCsv(`lexbridge-invoices-${t}.csv`, [
     ["Invoice", "Customer", "Work", "Date", "Due", "Status", "Excl VAT", "Incl VAT"],
     ...rows.map((i) => [i.id, customer(i.customerId)?.company, i.title, i.date, i.due, i.status, i.amount, Math.round(inc(i.amount))]),
   ]);
@@ -72,7 +72,7 @@ export default function Finance() {
         b="invoices"
         kpis={[
           { icon: <Banknote size={18} />, value: total(paidMonth), format: zar, label: "Paid this month, incl. VAT" },
-          { icon: <Clock3 size={18} />, value: total(owing), format: zar, label: "Owed to Fedpump, incl. VAT" },
+          { icon: <Clock3 size={18} />, value: total(owing), format: zar, label: "Owed to LexBridge, incl. VAT" },
           { icon: <CircleAlert size={18} />, value: total(overdue), format: zar, label: "Overdue", chip: overdue.length ? <span className="chip orange">{overdue.length} invoices</span> : undefined },
         ]}
         right={<button className="btn gold" onClick={csv}><Download size={16} /> Export CSV</button>}
@@ -97,7 +97,7 @@ export default function Finance() {
               return (
                 <li key={i.id}>
                   <button className="rowlink" onClick={() => setOpen({ k: "deal", id: i.dealId })}>
-                    <span style={{ flex: 1, minWidth: 0 }}><span className="clip">{customer(i.customerId)?.company}</span><span className="small muted">{j ? `${j.id}, ${j.done} of 6 bolts` : i.id}</span></span>
+                    <span style={{ flex: 1, minWidth: 0 }}><span className="clip">{customer(i.customerId)?.company}</span><span className="small muted">{j ? `${j.id}, ${j.done} of 6 stages` : i.id}</span></span>
                     <b className="tnum" style={{ fontWeight: 600 }}>{zarK(inc(i.amount))}</b>
                   </button>
                 </li>
@@ -122,7 +122,7 @@ export default function Finance() {
                       <td className="mono">{i.id}</td>
                       <td><button onClick={() => setOpen({ k: "customer", id: i.customerId })} style={{ fontWeight: 500, textAlign: "left" }}>{customer(i.customerId)?.company}</button></td>
                       <td className="muted">{i.title}</td>
-                      <td className="muted" style={{ whiteSpace: "nowrap" }}>{i.status === "Draft" ? "On handover" : fmtDay(i.due)}</td>
+                      <td className="muted" style={{ whiteSpace: "nowrap" }}>{i.status === "Draft" ? "On completion" : fmtDay(i.due)}</td>
                       <td><span className="cond" style={{ color: ST[i.status].c }}><I size={14} />{i.status}{i.status === "Overdue" ? ` ${late} d` : ""}</span></td>
                       <td className="r">{zar(inc(i.amount))}</td>
                       <td className="r">

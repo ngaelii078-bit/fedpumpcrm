@@ -254,7 +254,7 @@ export default function Pipeline() {
     }
   }, []);
 
-  const csv = () => downloadCsv(`fedpump-pipeline-${today()}.csv`, [
+  const csv = () => downloadCsv(`lexbridge-pipeline-${today()}.csv`, [
     ["Ref", "Title", "Customer", "Stage", "Value excl VAT", "Weighted", "Closes"],
     ...shown.map((d) => [d.id, d.title, customer(d.customerId)?.company, stageOf(d.status)!.name, d.value, Math.round(d.value * probOf(d.status)), fmtDay(d.closes)]),
   ]);

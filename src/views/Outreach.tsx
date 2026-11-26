@@ -34,7 +34,7 @@ function ReplyCard({ m }: { m: MailReply }) {
       </div>
       <p style={{ margin: "9px 0 8px" }}>{m.text}</p>
       <div className="small muted" style={{ display: "flex", gap: 8, alignItems: "center", flexWrap: "wrap" }}>
-        <Clock3 size={13} />{ago(m.at)}{late && <span style={{ color: "#ffb59f", fontWeight: 600 }}>past the 5 minute mark</span>}
+        <Clock3 size={13} />{ago(m.at)}{late && <span style={{ color: "var(--bad)", fontWeight: 600 }}>past the 5 minute mark</span>}
         <span className="clip" style={{ marginLeft: "auto", maxWidth: 150 }}>{camp?.name}</span>
       </div>
       <div style={{ display: "flex", gap: 8, marginTop: 11, flexWrap: "wrap" }}>
@@ -106,7 +106,7 @@ export default function Outreach() {
       a="Email"
       b="outreach"
       kpis={[
-        { icon: <Send size={18} />, value: all.reached, format: int, label: "People emailed" },
+        { icon: <Send size={18} />, value: all.reached, format: int, label: "People emailed in demo" },
         { icon: <Reply size={18} />, value: all.reached ? (all.replies / all.reached) * 100 : 0, format: pct, label: "Replied", chip: <span className="chip blue">{all.replies} replies</span> },
         { icon: <FileText size={18} />, value: all.quotes, format: int, label: "Quotes from outreach", chip: <span className="chip gold">{zarK(all.quoteValue)}</span> },
       ]}
@@ -201,7 +201,7 @@ export default function Outreach() {
               const reached = c.recipients.filter((r) => r.sent > n).length;
               return (
                 <button key={n} aria-pressed={n === i} onClick={() => setSi(n)}>
-                  <Mail size={16} /><span><b>Day {x.day}</b><span className="small muted">{reached} of {c.recipients.length} sent</span></span>
+                  <Mail size={16} /><span><b>Day {x.day}</b><span className="small muted">{reached} of {c.recipients.length} logged</span></span>
                 </button>
               );
             })}
@@ -230,7 +230,7 @@ export default function Outreach() {
           <h3 style={{ fontSize: 15, fontWeight: 600, margin: "22px 0 4px" }}>People in this campaign</h3>
           <div className="scrollx" style={{ maxHeight: 380, overflowY: "auto" }} data-lenis-prevent>
             <table className="tbl" style={{ minWidth: 640 }}>
-              <thead><tr><th>Person</th><th>About</th><th>Emails</th><th>Last sent</th><th>Status</th><th /></tr></thead>
+              <thead><tr><th>Person</th><th>About</th><th>Emails</th><th>Last logged</th><th>Status</th><th /></tr></thead>
               <tbody>
                 {c.recipients.map((r) => {
                   const k = contactOf(s, r.id);
@@ -264,7 +264,7 @@ export default function Outreach() {
 
       <div className="out3">
         <Panel title="Replies per week"><Cols name="Replies per week" data={weeks} color="#4A90D9" format={int} height={190} /></Panel>
-        <Panel title="Sending inboxes" sub={`${sentToday} of ${DAILY_CAP} today`}>
+        <Panel title="Demo sending inboxes" sub={`${sentToday} of ${DAILY_CAP} today`}>
           <ul style={{ display: "grid", gap: 16, paddingTop: 4 }}>
             {DOMAINS.map((d) => (
               <li key={d.name}>
@@ -274,7 +274,7 @@ export default function Outreach() {
               </li>
             ))}
           </ul>
-          <p className="small muted" style={{ marginTop: 14 }}>Plain text, no open tracking, never from the main domain.</p>
+          <p className="small muted" style={{ marginTop: 14 }}>Demo inboxes only. No messages are sent.</p>
         </Panel>
         <Panel title="Do not contact" sub={`${off.length} on the list`}>
           {off.length === 0 && <Empty>Nobody has asked to stop.</Empty>}

@@ -1,6 +1,6 @@
-# Fedpump CRM demo
+# LexBridge Group CRM demo
 
-Demo CRM for Fedpump CC, styled after the "Sales CRM dashboard" reel. Everything in it is sample data.
+Demo CRM for LexBridge Group, an independent logistics brokerage. Everything in it is sample data.
 
 ## Show it
 Double click `Start demo.bat`. It opens in the browser.
@@ -15,8 +15,7 @@ npm run demo     # serves out/ locally
 `out/` is a plain static site, so it can be hosted on Vercel, Netlify or any web server.
 
 ## Where things are
-- `src/lib/data.ts` customers, quotes, jobs, invoices, calendar
-- `src/lib/pumps.ts` the pump section drawings and findings
+- `src/lib/data.ts` customers, opportunities, operations, invoices and calendar
 - `src/lib/outreach.ts` email templates, audiences, pre-send check
 - `src/views/` one file per page
 - `src/app/globals.css` all styling

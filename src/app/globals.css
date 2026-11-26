@@ -6,16 +6,16 @@
   --ink-3: rgba(243, 240, 233, 0.68);
   --line: rgba(243, 240, 233, 0.1);
   --line-2: rgba(243, 240, 233, 0.18);
-  --panel: rgba(15, 20, 26, 0.56);
+  --panel: rgba(8, 32, 72, 0.78);
   --well: rgba(243, 240, 233, 0.06);
   --well-2: rgba(243, 240, 233, 0.12);
-  --gold: #edb771;
-  --gold-ink: #112333;
-  --navy: #0b1c2c;
+  --gold: #f06800;
+  --gold-ink: #082048;
+  --navy: #082048;
   --good: #6fd3a0;
   --warn: #f2c14e;
   --bad: #ff8d6e;
-  --c1: #bf8632;
+  --c1: #f06800;
   --c2: #4a90d9;
   --c3: #e0603a;
   --c4: #2fa37a;
@@ -25,6 +25,10 @@
   --display: var(--font-manrope), "Segoe UI", sans-serif;
   --text: var(--font-dm), "Segoe UI", sans-serif;
   --mono: var(--font-mono-dm), ui-monospace, monospace;
+  --chart-track: rgba(243, 240, 233, 0.07);
+  --chart-guide: rgba(243, 240, 233, 0.4);
+  --chart-strong: rgba(243, 240, 233, 0.75);
+  --chart-dot: #1a2027;
   color-scheme: dark;
 }
 
@@ -48,13 +52,13 @@ button:disabled { cursor: not-allowed; opacity: 0.5; }
 ::selection { background: var(--gold); color: var(--gold-ink); }
 .sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
 
-/* ---------- backdrop: their own workshop, out of focus ---------- */
-.backdrop { position: fixed; inset: 0; z-index: -2; overflow: hidden; background: #0c1218; }
-.backdrop img { position: absolute; inset: -4%; width: 108%; height: 108%; object-fit: cover; max-width: none; transition: opacity 0.9s var(--ease); }
+/* ---------- LexBridge's interwoven strands ---------- */
+.backdrop { position: fixed; inset: 0; z-index: -2; overflow: hidden; background: #082048; }
+.backdrop img { position: absolute; top: 25%; left: 0; width: 100%; height: auto; object-fit: contain; opacity: .26; max-width: none; transition: opacity 0.9s var(--ease); }
 .backdrop::after {
   content: ""; position: absolute; inset: 0;
   background:
-    linear-gradient(180deg, rgba(38, 70, 98, 0.74) 0%, rgba(20, 36, 50, 0.34) 24%, rgba(14, 16, 18, 0.3) 58%, rgba(9, 10, 11, 0.74) 100%);
+    linear-gradient(180deg, rgba(8, 32, 72, 0.58), rgba(8, 32, 72, 0.3) 48%, rgba(4, 20, 46, 0.8));
 }
 .backdrop .night { position: absolute; inset: 0; z-index: 1; background: linear-gradient(180deg, #0b1c2c 0%, rgba(8, 17, 27, 0.82) 60%, #070c12 100%); opacity: 0; transition: opacity 0.9s var(--ease); }
 [data-shift="night"] .backdrop .night { opacity: 0.86; }
@@ -69,7 +73,7 @@ button:disabled { cursor: not-allowed; opacity: 0.5; }
 .topbar::before { content: ""; position: absolute; inset: 0 -28px 0 -108px; z-index: -1; background: linear-gradient(180deg, rgba(20, 36, 50, 0.92), rgba(20, 36, 50, 0.6) 62%, transparent); opacity: 0; transition: opacity 0.3s var(--ease); }
 .topbar.stuck::before { opacity: 1; }
 .brand { display: flex; align-items: center; gap: 14px; min-width: 0; }
-.brand img { height: 46px; width: auto; display: block; }
+.brand img { height: 46px; width: auto; display: block; background: white; border-radius: 5px; padding: 3px 8px; }
 .demo-chip { font-size: 11px; font-weight: 500; color: var(--ink-2); border: 1px solid var(--line-2); border-radius: 999px; padding: 3px 9px; white-space: nowrap; }
 
 .pillnav { position: relative; display: flex; border-radius: 999px; padding: 4px; background: rgba(10, 18, 25, 0.5); border: 1px solid var(--line); backdrop-filter: blur(18px); }
@@ -127,7 +131,7 @@ button:disabled { cursor: not-allowed; opacity: 0.5; }
 .btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; height: 40px; padding: 0 17px; border-radius: 999px; font-weight: 600; font-size: 13.5px; white-space: nowrap; border: 1px solid var(--line-2); background: var(--well); transition: background 0.3s var(--ease), transform 0.3s var(--ease); }
 .btn:hover { background: var(--well-2); }
 .btn.gold { background: var(--gold); color: var(--gold-ink); border-color: transparent; }
-.btn.gold:hover { background: #f5c98d; }
+.btn.gold:hover { background: #ffad70; }
 .btn.sm { height: 34px; padding: 0 13px; font-size: 12.5px; }
 .btn.block { width: 100%; }
 
@@ -455,3 +459,58 @@ select.inp option { background: #1a232c; color: var(--ink); }
 @media (max-width: 1240px) { .outr { grid-template-columns: 320px minmax(0, 1fr); } .mailgrid { grid-template-columns: minmax(0, 1fr); } .out3 { grid-template-columns: 1fr 1fr; } }
 @media (max-width: 960px) { .outr, .out3, .newcamp { grid-template-columns: minmax(0, 1fr); } }
 @media (max-width: 640px) { .check ul { grid-template-columns: minmax(0, 1fr) !important; } .paper .phead2 { flex-direction: column; } .pipelab b { font-size: 18px; } .seq > * { flex: 1 1 44%; } }
+
+/* Light mode keeps LexBridge's navy and orange accents on soft, readable surfaces. */
+html[data-shift="day"] {
+  --ink: #102a4b;
+  --ink-2: #405874;
+  --ink-3: #5b7089;
+  --line: rgba(8, 32, 72, 0.11);
+  --line-2: rgba(8, 32, 72, 0.2);
+  --panel: rgba(255, 255, 255, 0.94);
+  --well: rgba(8, 32, 72, 0.045);
+  --well-2: rgba(8, 32, 72, 0.09);
+  --good: #14754e;
+  --warn: #996000;
+  --bad: #a7351b;
+  --chart-track: rgba(8, 32, 72, 0.08);
+  --chart-guide: rgba(8, 32, 72, 0.35);
+  --chart-strong: rgba(8, 32, 72, 0.65);
+  --chart-dot: #fff;
+  background: #edf4f7;
+  color-scheme: light;
+}
+[data-shift="day"] * { scrollbar-color: rgba(8, 32, 72, 0.28) transparent; }
+[data-shift="day"] .backdrop { background: #edf4f7; }
+[data-shift="day"] .backdrop img { opacity: .1; }
+[data-shift="day"] .backdrop::after { background: linear-gradient(160deg, rgba(234, 245, 250, .84), rgba(250, 252, 252, .94) 55%, rgba(232, 242, 247, .92)); }
+[data-shift="day"] .grain { opacity: .025; }
+[data-shift="day"] .topbar::before { background: linear-gradient(180deg, rgba(238, 246, 249, .98), rgba(238, 246, 249, .88) 65%, transparent); }
+[data-shift="day"] .pillnav, [data-shift="day"] .rail, [data-shift="day"] .dock { background: rgba(255, 255, 255, .92); box-shadow: 0 8px 30px rgba(8, 32, 72, .08); }
+[data-shift="day"] .pillnav .ind, [data-shift="day"] .dock > a[aria-current="page"], [data-shift="day"] .seg button[aria-pressed="true"], [data-shift="day"] .tag[aria-pressed="true"], [data-shift="day"] .seq button[aria-pressed="true"] { background: rgba(8, 32, 72, .1); }
+[data-shift="day"] .seg { background: rgba(8, 32, 72, .04); }
+[data-shift="day"] .rail .tip, [data-shift="day"] .drawer, [data-shift="day"] .modal, [data-shift="day"] .pop, [data-shift="day"] .menu, [data-shift="day"] .ctip { background: rgba(255, 255, 255, .98); box-shadow: 0 18px 45px rgba(8, 32, 72, .16); }
+[data-shift="day"] .panel, [data-shift="day"] .ccard, [data-shift="day"] .job { box-shadow: 0 8px 24px rgba(8, 32, 72, .045); }
+[data-shift="day"] .panel.tint { background: #fff3e9; border-color: rgba(240, 104, 0, .25); }
+[data-shift="day"] .col, [data-shift="day"] .wellbox, [data-shift="day"] .check { background: rgba(255, 255, 255, .66); }
+[data-shift="day"] .col.over, [data-shift="day"] .wellbox.over.won { background: #fff0e3; }
+[data-shift="day"] .wellbox.over.lost { background: #fcebe6; }
+[data-shift="day"] .deal { border-color: var(--line); }
+[data-shift="day"] .deal[data-tone="enquiry"] { background: #e3f0fa; }
+[data-shift="day"] .deal[data-tone="inspect"] { background: #fcf0db; }
+[data-shift="day"] .deal[data-tone="quoted"] { background: #fce7de; }
+[data-shift="day"] .deal[data-tone="po"] { background: #e9eef2; }
+[data-shift="day"] .deal .urgent { color: #a7351b; }
+[data-shift="day"] .dots { border-color: var(--line-2); }
+[data-shift="day"] .job[aria-pressed="true"], [data-shift="day"] .camp[aria-pressed="true"], [data-shift="day"] .pick.on { background: #fff0e3; border-color: rgba(240, 104, 0, .35); }
+[data-shift="day"] .inp { background: #f7fafb; }
+[data-shift="day"] select.inp option { background: #fff; }
+[data-shift="day"] .tbl td { border-color: var(--line); }
+[data-shift="day"] .tbl tbody tr:hover, [data-shift="day"] .rowlink:hover, [data-shift="day"] .hov:hover { background: var(--well); }
+[data-shift="day"] .ccard .box, [data-shift="day"] .reply, [data-shift="day"] .camp { background: var(--well); }
+[data-shift="day"] .chart .grid-l, [data-shift="day"] .cal .hr { stroke: var(--line-2); border-color: var(--line); }
+[data-shift="day"] .cal .cell { background: var(--well-2); }
+[data-shift="day"] .ev { background: #e5eff8 !important; border-color: var(--line-2); }
+[data-shift="day"] .steps > div { border-color: var(--line-2); }
+[data-shift="day"] .steps > div.done { border-color: var(--gold); }
+[data-shift="day"] .avs .av { box-shadow: 0 0 0 1.5px #fff; }

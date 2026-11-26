@@ -10,44 +10,44 @@ import type {
 
 export const TEAM: Member[] = [
   { id: "NP", name: "Naledi", role: "Front office", tone: "#F4D9B4" },
-  { id: "DV", name: "Dirk", role: "Estimator", tone: "#C4DDF2" },
-  { id: "TM", name: "Thabo", role: "Workshop foreman", tone: "#F3C7B5" },
-  { id: "RG", name: "Ravi", role: "Machinist", tone: "#CBE6D5" },
+  { id: "DV", name: "Dirk", role: "Solutions consultant", tone: "#C4DDF2" },
+  { id: "TM", name: "Thabo", role: "Operations coordinator", tone: "#F3C7B5" },
+  { id: "RG", name: "Ravi", role: "Provider coordinator", tone: "#CBE6D5" },
   { id: "LJ", name: "Lerato", role: "Accounts", tone: "#E3D2EC" },
 ];
 export const ME = TEAM[0];
 
 export const STAGES: { id: Stage; name: string; prob: number; dot: string }[] = [
   { id: "enquiry", name: "Enquiry", prob: 0.15, dot: "#8FC1EE" },
-  { id: "inspect", name: "Strip & inspect", prob: 0.4, dot: "#EDB771" },
+  { id: "inspect", name: "Assessment", prob: 0.4, dot: "#EDB771" },
   { id: "quoted", name: "Quoted", prob: 0.6, dot: "#F07F58" },
   { id: "po", name: "PO pending", prob: 0.9, dot: "#F3F0E9" },
 ];
 export const stageOf = (id: string) => STAGES.find((s) => s.id === id);
 export const probOf = (s: DealStatus) => (s === "won" ? 1 : s === "lost" ? 0 : stageOf(s)!.prob);
 
-export const JOB_STAGES = ["Receive", "Strip", "Inspect", "Machine", "Assemble", "QC & handover"];
+export const JOB_STAGES = ["Enquiry received", "Assess needs", "Select provider", "Coordinate", "Track progress", "Complete & review"];
 export const MONTH_TARGET = 900000;
-export const SEGMENTS: Segment[] = ["Mining", "Manufacturing", "Agriculture", "Water"];
+export const SEGMENTS: Segment[] = ["Retail", "Manufacturing", "E-commerce", "Services"];
 export const SOURCES: Source[] = ["Repeat", "Referral", "WhatsApp", "Website", "Phone", "Outreach"];
 export const SERVICES: Service[] = [
-  "Pump refurbishment", "Inspection & assessment", "Component reconditioning", "Precision machining",
+  "Nationwide courier", "International courier", "Air sea & customs", "Transport & warehousing", "E-commerce logistics", "Mailroom management",
 ];
-export const PUMP_TYPES: PumpType[] = ["Multistage", "Slurry", "Submersible"];
-export const EVENT_KINDS: EventKind[] = ["Site visit", "Collection", "Inspection", "Delivery", "Call-out"];
+export const PUMP_TYPES: PumpType[] = ["Domestic", "International", "Freight"];
+export const EVENT_KINDS: EventKind[] = ["Strategy call", "Partner meeting", "Assessment", "Service review", "Follow-up"];
 
 export const SEG_COLOR: Record<Segment, string> = {
-  Mining: "#BF8632", Manufacturing: "#4A90D9", Agriculture: "#E0603A", Water: "#2FA37A",
+  Retail: "#BF8632", Manufacturing: "#4A90D9", "E-commerce": "#E0603A", Services: "#2FA37A",
 };
 export const SRC_COLOR: Record<Source, string> = {
   Repeat: "#BF8632", Referral: "#4A90D9", WhatsApp: "#E0603A", Website: "#2FA37A", Phone: "#B070C4", Outreach: "#8F9A3A",
 };
 
 export const MACHINES = [
-  { name: "Horizontal borer", hours: 46, cap: 56 },
-  { name: "Vertical borer", hours: 51, cap: 56 },
-  { name: "Milling machine", hours: 33, cap: 56 },
-  { name: "Radial arm drill", hours: 21, cap: 56 },
+  { name: "Domestic courier", hours: 46, cap: 56 },
+  { name: "International courier", hours: 51, cap: 56 },
+  { name: "Freight & customs", hours: 33, cap: 56 },
+  { name: "Warehousing", hours: 21, cap: 56 },
 ];
 
 function rng(seed: number) {
@@ -63,101 +63,65 @@ function rng(seed: number) {
 
 type C = [string, string, string, string, Segment, string, number, number, number, boolean, Source, [string, PumpType, string, number, number][]];
 const CUSTOMERS: C[] = [
-  ["c1", "Pieter Steyn", "Engineering Foreman", "Ironwood Colliery", "Mining", "Ogies", 2, 88, 41, true, "Repeat", [
-    ["IW-PS3-01", "Multistage", "Dewatering, 8 stage", 17, 18], ["IW-PS3-02", "Multistage", "Dewatering, 8 stage", 6, 18], ["IW-WP-07", "Slurry", "Coal slurry, 150 mm", 9, 10]]],
-  ["c2", "Kagiso Molefe", "Plant Engineer", "Sable Ridge Platinum", "Mining", "Rustenburg", 0, 94, 63, true, "Repeat", [
-    ["SR-CON-11", "Slurry", "Concentrate, 200 mm", 11, 12], ["SR-CON-12", "Slurry", "Concentrate, 200 mm", 3, 12], ["SR-TL-02", "Slurry", "Tailings, 300 mm", 5, 9], ["SR-DW-04", "Submersible", "Dewatering, 37 kW", 13, 14]]],
-  ["c3", "Anele Dube", "Maintenance Planner", "Thornveld Chrome", "Mining", "Steelpoort", 5, 71, 22, false, "Referral", [
-    ["TC-SP-04", "Slurry", "Chrome slurry, 100 mm", 7, 8], ["TC-SP-05", "Slurry", "Chrome slurry, 100 mm", 2, 8]]],
-  ["c4", "Willem Fourie", "Shaft Engineer", "Amber Deep Gold", "Mining", "Carletonville", 1, 91, 55, true, "Repeat", [
-    ["AD-L38-01", "Multistage", "High lift, 8 stage", 22, 24], ["AD-L38-02", "Multistage", "High lift, 8 stage", 10, 24]]],
-  ["c5", "Nomsa Khoza", "Buyer", "Kiaat Coal", "Mining", "Delmas", 8, 64, 14, false, "Phone", [
-    ["KC-PT-02", "Submersible", "Pit dewatering, 55 kW", 10, 12], ["KC-PT-03", "Submersible", "Pit dewatering, 55 kW", 4, 12]]],
-  ["c6", "Sanjay Pillay", "Utilities Manager", "Drakens Paper Mill", "Manufacturing", "Springs", 3, 82, 37, false, "Repeat", [
-    ["DP-CW-01", "Multistage", "Cooling water, 4 stage", 15, 18], ["DP-ST-08", "Slurry", "Stock pump, 150 mm", 11, 14]]],
-  ["c7", "Ruth Adams", "Engineering Manager", "Copperleaf Chemicals", "Manufacturing", "Sasolburg", 1, 86, 48, true, "Referral", [
-    ["CL-BF-01", "Multistage", "Boiler feed, 6 stage", 19, 20], ["CL-BF-02", "Multistage", "Boiler feed, 6 stage", 8, 20], ["CL-EF-03", "Submersible", "Effluent, 22 kW", 6, 12]]],
-  ["c8", "Themba Nkosi", "Maintenance Lead", "Delmora Foods", "Manufacturing", "Boksburg", 6, 68, 19, false, "Website", [
-    ["DF-CIP-02", "Multistage", "CIP supply, 3 stage", 10, 12]]],
-  ["c9", "Ilse Botha", "Plant Manager", "Marulane Beverages", "Manufacturing", "Isando", 11, 59, 11, false, "Website", [
-    ["MB-GL-01", "Multistage", "Glycol, 3 stage", 8, 12]]],
-  ["c10", "Hennie Marais", "Owner", "Bergvallei Citrus", "Agriculture", "Groblersdal", 4, 77, 16, false, "WhatsApp", [
-    ["BV-BH-01", "Submersible", "Borehole, 15 kW", 14, 16], ["BV-PK-01", "Multistage", "Packhouse, 4 stage", 12, 14]]],
-  ["c11", "Lindiwe Zulu", "Farm Manager", "Suikerbos Pivot Farms", "Agriculture", "Bethal", 9, 66, 12, false, "WhatsApp", [
-    ["SP-PV-03", "Multistage", "Pivot supply, 4 stage", 16, 18]]],
-  ["c12", "Johan Kruger", "Owner", "Kareebos Dairy", "Agriculture", "Heidelberg", 13, 52, 7, false, "Phone", [
-    ["KD-ML-01", "Submersible", "Slurry pit, 7.5 kW", 9, 12]]],
-  ["c13", "Mandla Sithole", "Pump Station Supt", "Vaalkrans Water Works", "Water", "Vereeniging", 1, 90, 52, true, "Repeat", [
-    ["VK-HL-01", "Multistage", "High lift, 5 stage", 23, 24], ["VK-HL-02", "Multistage", "High lift, 5 stage", 12, 24], ["VK-RS-05", "Submersible", "Raw sewage, 45 kW", 8, 12]]],
-  ["c14", "Farah Ismail", "Process Controller", "Silverstream Wastewater", "Water", "Benoni", 0, 79, 28, false, "Phone", [
-    ["SS-IN-02", "Submersible", "Inlet works, 30 kW", 11, 12], ["SS-RAS-1", "Submersible", "Return sludge, 18 kW", 5, 12]]],
-  ["c15", "Grant Naidoo", "Facilities Manager", "Highveld Estate Utilities", "Water", "Midrand", 7, 61, 9, false, "Website", [
-    ["HE-BS-01", "Multistage", "Booster set, 4 stage", 13, 18]]],
-  ["c16", "Zanele Mabaso", "Technical Services", "Mopane Town Water", "Water", "Polokwane", 10, 70, 24, false, "Referral", [
-    ["MT-BH-06", "Submersible", "Borehole, 30 kW", 17, 18], ["MT-VT-01", "Multistage", "Vertical turbine", 10, 24]]],
+  ["c1", "Pieter Steyn", "Operations Manager", "Ironwood Retail", "Retail", "Johannesburg", 2, 88, 41, true, "Repeat", [["LBR-001", "Domestic", "Nationwide store deliveries", 5, 6]]],
+  ["c2", "Kagiso Molefe", "Supply Chain Manager", "Sable Ridge Stores", "Retail", "Pretoria", 0, 94, 63, true, "Repeat", [["LBR-002", "Domestic", "Store replenishment", 4, 6]]],
+  ["c3", "Anele Dube", "Logistics Manager", "Thornveld Trading", "Retail", "Cape Town", 5, 71, 22, false, "Referral", [["LBR-003", "International", "Import deliveries", 5, 6]]],
+  ["c4", "Willem Fourie", "Buyer", "Amber Home", "Retail", "Durban", 1, 91, 55, true, "Repeat", [["LBR-004", "Freight", "Inbound freight", 5, 6]]],
+  ["c5", "Nomsa Khoza", "Operations Lead", "Kiaat Supplies", "Retail", "Midrand", 8, 64, 14, false, "Phone", [["LBR-005", "Domestic", "Branch deliveries", 5, 6]]],
+  ["c6", "Sanjay Pillay", "Supply Chain Manager", "Drakens Paper", "Manufacturing", "Springs", 3, 82, 37, false, "Repeat", [["LBR-006", "Freight", "Pallet distribution", 5, 6]]],
+  ["c7", "Ruth Adams", "Operations Manager", "Copperleaf Products", "Manufacturing", "Sasolburg", 1, 86, 48, true, "Referral", [["LBR-007", "International", "International shipments", 5, 6]]],
+  ["c8", "Themba Nkosi", "Logistics Lead", "Delmora Foods", "Manufacturing", "Boksburg", 6, 68, 19, false, "Website", [["LBR-008", "Domestic", "Regional distribution", 5, 6]]],
+  ["c9", "Ilse Botha", "Plant Manager", "Marulane Beverages", "Manufacturing", "Isando", 11, 59, 11, false, "Website", [["LBR-009", "Freight", "Warehousing and transport", 5, 6]]],
+  ["c10", "Hennie Marais", "Owner", "Bergvallei Online", "E-commerce", "Groblersdal", 4, 77, 16, false, "WhatsApp", [["LBR-010", "Domestic", "Online order fulfilment", 5, 6]]],
+  ["c11", "Lindiwe Zulu", "Fulfilment Manager", "Suikerbos Shop", "E-commerce", "Bethal", 9, 66, 12, false, "WhatsApp", [["LBR-011", "Domestic", "Customer deliveries", 5, 6]]],
+  ["c12", "Johan Kruger", "Owner", "Kareebos Market", "E-commerce", "Heidelberg", 13, 52, 7, false, "Phone", [["LBR-012", "International", "Cross-border orders", 5, 6]]],
+  ["c13", "Mandla Sithole", "Facilities Manager", "Vaalkrans Offices", "Services", "Vereeniging", 1, 90, 52, true, "Repeat", [["LBR-013", "Domestic", "Mailroom management", 5, 6]]],
+  ["c14", "Farah Ismail", "Office Manager", "Silverstream Group", "Services", "Benoni", 0, 79, 28, false, "Phone", [["LBR-014", "Domestic", "Document deliveries", 5, 6]]],
+  ["c15", "Grant Naidoo", "Facilities Manager", "Highveld Services", "Services", "Midrand", 7, 61, 9, false, "Website", [["LBR-015", "Freight", "Storage and transport", 5, 6]]],
+  ["c16", "Zanele Mabaso", "Operations Manager", "Mopane Consulting", "Services", "Polokwane", 10, 70, 24, false, "Referral", [["LBR-016", "International", "International courier", 5, 6]]],
 ];
 
 type D = [string, string, number, Stage, number, string[], Service, PumpType, Urgency, Source];
 const OPEN: D[] = [
-  ["Multistage, high vibration", "c1", 142000, "enquiry", 9, ["DV", "TM"], "Pump refurbishment", "Multistage", "breakdown", "Phone"],
-  ["Dewatering pump refurb x3", "c2", 187300, "enquiry", 26, ["DV", "NP"], "Pump refurbishment", "Submersible", "planned", "Repeat"],
-  ["Slurry pump wet end", "c3", 68400, "enquiry", 18, ["DV"], "Inspection & assessment", "Slurry", "planned", "Referral"],
-  ["Impeller reconditioning, set of 4", "c6", 54200, "enquiry", 22, ["RG", "DV"], "Component reconditioning", "Multistage", "planned", "Repeat"],
-  ["Booster set refurbishment", "c15", 96500, "enquiry", 31, ["NP"], "Pump refurbishment", "Multistage", "planned", "Website"],
-  ["Volute vertical bore", "c5", 47900, "enquiry", 14, ["RG"], "Precision machining", "Submersible", "planned", "Phone"],
-  ["Borehole pump refurb", "c10", 38600, "enquiry", 12, ["NP", "TM"], "Pump refurbishment", "Submersible", "planned", "WhatsApp"],
-  ["Bearing housing line bore", "c8", 28700, "enquiry", 20, ["RG"], "Precision machining", "Multistage", "planned", "Website"],
-
-  ["8 stage multistage overhaul", "c4", 412000, "inspect", 16, ["TM", "DV"], "Pump refurbishment", "Multistage", "planned", "Repeat"],
-  ["Slurry pump full refurb", "c2", 236500, "inspect", 11, ["TM", "DV", "RG"], "Pump refurbishment", "Slurry", "planned", "Repeat"],
-  ["Submersible seal failure", "c14", 58900, "inspect", 3, ["TM"], "Pump refurbishment", "Submersible", "breakdown", "Phone"],
-  ["Boiler feed pump overhaul", "c7", 318400, "inspect", 24, ["DV", "TM"], "Pump refurbishment", "Multistage", "planned", "Referral"],
-  ["Sewage pump wet end", "c13", 121600, "inspect", 19, ["TM", "RG"], "Component reconditioning", "Submersible", "planned", "Repeat"],
-  ["Stage casing set, skim and bore", "c1", 88200, "inspect", 13, ["RG", "DV"], "Precision machining", "Multistage", "planned", "Repeat"],
-  ["Pivot irrigation pump refurb", "c11", 64800, "inspect", 28, ["NP", "TM"], "Pump refurbishment", "Multistage", "planned", "WhatsApp"],
-
-  ["Shutdown package, 6 pumps", "c7", 548000, "quoted", 34, ["DV", "TM", "NP"], "Pump refurbishment", "Multistage", "shutdown", "Referral"],
-  ["5 stage multistage overhaul", "c13", 286000, "quoted", 15, ["DV", "TM"], "Pump refurbishment", "Multistage", "planned", "Repeat"],
-  ["Vertical turbine bowl assembly", "c16", 205800, "quoted", 27, ["DV"], "Pump refurbishment", "Multistage", "planned", "Referral"],
-  ["Slurry liners and impeller", "c3", 174600, "quoted", 10, ["DV", "RG"], "Component reconditioning", "Slurry", "planned", "Referral"],
-  ["Cooling water pump refurb", "c6", 132400, "quoted", 17, ["NP", "DV"], "Pump refurbishment", "Multistage", "planned", "Repeat"],
-  ["Discharge casing weld and bore", "c4", 76900, "quoted", 8, ["RG", "DV"], "Precision machining", "Multistage", "breakdown", "Repeat"],
-  ["Shaft and sleeve machining", "c9", 41300, "quoted", 21, ["RG"], "Precision machining", "Multistage", "planned", "Website"],
-  ["Dairy slurry pit pump refurb", "c12", 33500, "quoted", 23, ["NP"], "Pump refurbishment", "Submersible", "planned", "Phone"],
-
-  ["High lift pump refurbishment", "c13", 264300, "po", 5, ["DV", "TM"], "Pump refurbishment", "Multistage", "planned", "Repeat"],
-  ["Slurry pump refurb, unit 2", "c2", 221800, "po", 7, ["TM", "DV", "RG"], "Pump refurbishment", "Slurry", "planned", "Repeat"],
-  ["Dewatering pump refurb x2", "c5", 148700, "po", 10, ["DV", "NP"], "Pump refurbishment", "Submersible", "planned", "Phone"],
-  ["Packhouse pump refurb", "c10", 72900, "po", 6, ["NP", "TM"], "Pump refurbishment", "Multistage", "planned", "WhatsApp"],
-  ["Wear ring and neck ring set", "c8", 52600, "po", 4, ["RG"], "Component reconditioning", "Multistage", "planned", "Website"],
-  ["Bore and sleeve, DE housing", "c1", 36400, "po", 2, ["RG", "TM"], "Precision machining", "Multistage", "breakdown", "Repeat"],
+ ["Nationwide parcel network", "c1", 142000, "enquiry", 9, ["DV", "TM"], "Nationwide courier", "Domestic", "planned", "Phone"],
+ ["Store replenishment programme", "c2", 187300, "enquiry", 26, ["DV", "NP"], "Nationwide courier", "Domestic", "planned", "Repeat"],
+ ["International shipping review", "c3", 68400, "enquiry", 18, ["DV"], "International courier", "International", "planned", "Referral"],
+ ["Freight and warehousing", "c6", 54200, "enquiry", 22, ["RG", "DV"], "Transport & warehousing", "Freight", "planned", "Repeat"],
+ ["Mailroom service assessment", "c15", 96500, "enquiry", 31, ["NP"], "Mailroom management", "Domestic", "planned", "Website"],
+ ["Online order deliveries", "c10", 38600, "enquiry", 12, ["NP", "TM"], "E-commerce logistics", "Domestic", "planned", "WhatsApp"],
+ ["Inbound freight assessment", "c4", 412000, "inspect", 16, ["TM", "DV"], "Air sea & customs", "Freight", "planned", "Repeat"],
+ ["Domestic courier review", "c2", 236500, "inspect", 11, ["TM", "DV", "RG"], "Nationwide courier", "Domestic", "planned", "Repeat"],
+ ["Urgent document shipment", "c14", 58900, "inspect", 3, ["TM"], "Nationwide courier", "Domestic", "breakdown", "Phone"],
+ ["International delivery plan", "c7", 318400, "inspect", 24, ["DV", "TM"], "International courier", "International", "planned", "Referral"],
+ ["Air freight and customs", "c13", 286000, "quoted", 15, ["DV", "TM"], "Air sea & customs", "Freight", "planned", "Repeat"],
+ ["Cross-border courier", "c16", 205800, "quoted", 27, ["DV"], "International courier", "International", "planned", "Referral"],
+ ["E-commerce fulfilment", "c3", 174600, "quoted", 10, ["DV", "RG"], "E-commerce logistics", "Domestic", "planned", "Referral"],
+ ["Mailroom coordination", "c13", 264300, "po", 5, ["DV", "TM"], "Mailroom management", "Domestic", "planned", "Repeat"],
+ ["Store delivery network", "c2", 221800, "po", 7, ["TM", "DV", "RG"], "Nationwide courier", "Domestic", "planned", "Repeat"],
+ ["Warehousing programme", "c5", 148700, "po", 10, ["DV", "NP"], "Transport & warehousing", "Freight", "planned", "Phone"],
 ];
 
-/* This month's wins. Each one is a job on the workshop floor. */
+/* This month's won opportunities and active engagements. */
 type W = [string, string, number, number, string[], Service, PumpType, Urgency, Source, number, number, string, string, string];
 const RECENT: W[] = [
-  // title, customer, value, daysAgo, owners, service, pump, urgency, source, boltsDone, dueIn, machine, photo, part code
-  ["6 stage multistage overhaul", "c6", 198400, 12, ["TM", "DV"], "Pump refurbishment", "Multistage", "planned", "Repeat", 3, 7, "Horizontal borer", "workshop", "orrrrrroro"],
-  ["Slurry pump refurb, unit 1", "c2", 214600, 15, ["TM", "RG"], "Pump refurbishment", "Slurry", "planned", "Repeat", 4, 3, "Vertical borer", "casing", "rxxxxorror"],
-  ["Raw sewage pump refurb", "c14", 96800, 4, ["TM"], "Pump refurbishment", "Submersible", "breakdown", "Phone", 3, 1, "Vertical borer", "casing", "oxrrxoxoror"],
-  ["Boiler feed shaft and sleeves", "c7", 74500, 18, ["RG", "DV"], "Precision machining", "Multistage", "planned", "Referral", 5, 0, "Milling machine", "machining", "orxooororr"],
-  ["Borehole pumps x2", "c11", 63700, 10, ["TM", "NP"], "Pump refurbishment", "Submersible", "planned", "WhatsApp", 4, 5, "Radial arm drill", "workshop", "oroorxoxroo"],
+ ["Regional distribution", "c6", 198400, 12, ["TM", "DV"], "Nationwide courier", "Domestic", "planned", "Repeat", 3, 7, "Domestic courier", "workshop", "orrrrrroro"],
+ ["International courier rollout", "c2", 214600, 15, ["TM", "RG"], "International courier", "International", "planned", "Repeat", 4, 3, "International courier", "casing", "rxxxxorror"],
+ ["Urgent document delivery", "c14", 96800, 4, ["TM"], "Nationwide courier", "Domestic", "breakdown", "Phone", 3, 1, "Domestic courier", "casing", "oxrrxoxoror"],
+ ["Warehousing coordination", "c7", 74500, 18, ["RG", "DV"], "Transport & warehousing", "Freight", "planned", "Referral", 5, 0, "Warehousing", "machining", "orxooororr"],
+ ["E-commerce fulfilment plan", "c11", 63700, 10, ["TM", "NP"], "E-commerce logistics", "Domestic", "planned", "WhatsApp", 4, 5, "Domestic courier", "workshop", "oroorxoxroo"],
 ];
 
 /* last number is the typical size of the job */
 const PAST_TITLES: [string, Service, PumpType, number][] = [
-  ["Multistage pump overhaul", "Pump refurbishment", "Multistage", 2.6],
-  ["Slurry pump refurb", "Pump refurbishment", "Slurry", 1.9],
-  ["Submersible pump refurb", "Pump refurbishment", "Submersible", 1.1],
-  ["Impeller and wear ring set", "Component reconditioning", "Multistage", 0.8],
-  ["Bearing housing bore and sleeve", "Precision machining", "Multistage", 0.4],
-  ["Volute liner replacement", "Component reconditioning", "Slurry", 1],
-  ["Shaft machining", "Precision machining", "Multistage", 0.5],
-  ["Stage casing line bore", "Precision machining", "Multistage", 0.7],
-  ["Strip, inspect and report", "Inspection & assessment", "Submersible", 0.16],
-  ["Breakdown strip and rebuild", "Pump refurbishment", "Multistage", 1.8],
+ ["Nationwide delivery programme", "Nationwide courier", "Domestic", 2.6],
+ ["International courier service", "International courier", "International", 1.9],
+ ["Air freight and customs", "Air sea & customs", "Freight", 1.1],
+ ["Transport and storage", "Transport & warehousing", "Freight", 0.8],
+ ["E-commerce delivery plan", "E-commerce logistics", "Domestic", 0.4],
+ ["Mailroom management", "Mailroom management", "Domestic", 1],
+ ["Cross-border delivery plan", "International courier", "International", 0.5],
 ];
-const LOST_WHY = ["Went with new pump", "Price", "Project postponed", "Lead time", "No reply"];
+const LOST_WHY = ["Existing provider", "Price", "Project postponed", "Lead time", "No reply"];
 
 // oldest first, 11 full months before this one
 const MONTHLY = [684000, 742000, 655000, 812000, 903000, 768000, 946000, 621000, 858000, 1012000, 884000];
@@ -180,7 +144,7 @@ export function seed(now = new Date()): State {
   }));
 
   let ref = 214;
-  const nextRef = () => `FQ-${++ref}`;
+  const nextRef = () => `LQ-${++ref}`;
   const deals: Deal[] = [];
 
   /* history */
@@ -189,10 +153,10 @@ export function seed(now = new Date()): State {
     const start = monthStart(t0, back);
     const days = new Date(start.getFullYear(), start.getMonth() + 1, 0).getDate();
     const n = 6 + Math.floor(r() * 4);
-    /* every month touches all four industries, then leans to mining; work matches pumps they own */
+    /* History spans all industries and matches each customer's service profile. */
     const buyers = Array.from({ length: n }, (_, k) => {
       const lean = r();
-      const g = k < 4 ? SEGMENTS[(k + i) % 4] : lean < 0.45 ? "Mining" : lean < 0.72 ? "Manufacturing" : lean < 0.82 ? "Agriculture" : "Water";
+      const g = k < 4 ? SEGMENTS[(k + i) % 4] : lean < 0.45 ? "Retail" : lean < 0.72 ? "Manufacturing" : lean < 0.82 ? "E-commerce" : "Services";
       return pick(customers.filter((y) => y.segment === g));
     });
     const kinds = buyers.map((c) => pick(PAST_TITLES.filter((k) => c.pumps.some((p) => p.type === k[2]))));
@@ -239,15 +203,15 @@ export function seed(now = new Date()): State {
       created: day(-back - 16), owners, service, pumpType, urgency, source, pos: 0,
     });
     jobs.push({
-      id: `FP-${++jobNo}`, dealId: id, customerId, title, pumpType, done, due: day(due), machine, urgency,
+      id: `LB-${++jobNo}`, dealId: id, customerId, title, pumpType, done, due: day(due), machine, urgency,
       photo, parts: partsFor(pumpType, code),
     });
   });
-  [["Bowl assembly, 3 units", "c16", 118000, 6], ["Glycol pump refurb", "c9", 37200, 9]].forEach(([title, customerId, value, back]) => {
+  [["Freight coordination", "c16", 118000, 6], ["Delivery programme", "c9", 37200, 9]].forEach(([title, customerId, value, back]) => {
     deals.push({
       id: nextRef(), title: title as string, customerId: customerId as string, value: value as number, status: "lost",
       closes: inMonth(back as number), closedAt: inMonth(back as number), created: day(-(back as number) - 20), owners: ["DV"],
-      service: "Pump refurbishment", pumpType: "Multistage", urgency: "planned", source: "Website", pos: 0, lostReason: "Went with new pump",
+      service: "Nationwide courier", pumpType: "Domestic", urgency: "planned", source: "Website", pos: 0, lostReason: "Existing provider",
     });
   });
 
@@ -258,16 +222,16 @@ export function seed(now = new Date()): State {
       owners, service, pumpType, urgency, source, pos: i * 10,
     });
   });
-  /* pumps already stripped while the quote is being worked out */
+  /* Assessments in progress before an order is confirmed. */
   const onFloor: [string, number, number, string, string, string][] = [
-    ["8 stage multistage overhaul", 2, 16, "Horizontal borer", "workshop", "orxrxrrror"],
-    ["Slurry pump full refurb", 1, 11, "Vertical borer", "casing", "rxxxxrrror"],
-    ["Submersible seal failure", 2, 3, "Radial arm drill", "casing", "oroorxxooro"],
+    ["Inbound freight assessment", 2, 16, "Domestic courier", "workshop", "orxrxrrror"],
+    ["Domestic courier review", 1, 11, "International courier", "casing", "rxxxxrrror"],
+    ["Urgent document shipment", 2, 3, "Warehousing", "casing", "oroorxxooro"],
   ];
   onFloor.forEach(([title, done, due, machine, photo, code]) => {
     const d = deals.find((x) => x.title === title && x.status === "inspect")!;
     jobs.push({
-      id: `FP-${++jobNo}`, dealId: d.id, customerId: d.customerId, title, pumpType: d.pumpType, done, due: day(due),
+      id: `LB-${++jobNo}`, dealId: d.id, customerId: d.customerId, title, pumpType: d.pumpType, done, due: day(due),
       machine, urgency: d.urgency, photo, parts: partsFor(d.pumpType, code),
     });
   });
@@ -298,27 +262,17 @@ export function seed(now = new Date()): State {
   /* calendar */
   const mon = mondayOf(t0);
   const ev: [EventKind, string, string, number, number, number, string][] = [
-    ["Collection", "Collect slurry pump, unit 2", "c2", 0, 7, 2.5, "TM"],
-    ["Site visit", "Measure bearing housings", "c1", 0, 11, 2, "DV"],
-    ["Inspection", "Strip 8 stage multistage", "c4", 1, 8, 3, "TM"],
-    ["Site visit", "Booster set survey", "c15", 1, 13, 1.5, "NP"],
-    ["Call-out", "Inlet pump tripped on seal leak", "c14", 1, 18.5, 2, "TM"],
-    ["Delivery", "Deliver refurbished stock pump", "c6", 2, 7.5, 2, "RG"],
-    ["Inspection", "Boiler feed strip report", "c7", 2, 10, 2, "DV"],
-    ["Site visit", "Shutdown planning meeting", "c7", 2, 14, 2, "DV"],
-    ["Collection", "Collect high lift pump", "c13", 3, 6.5, 3, "TM"],
-    ["Inspection", "Liner thickness check", "c3", 3, 11, 1.5, "RG"],
-    ["Site visit", "Pivot pump quote walk", "c11", 3, 14, 2, "NP"],
-    ["Delivery", "Deliver raw sewage pump", "c14", 4, 8, 2, "RG"],
-    ["Inspection", "Shaft runout, boiler feed", "c7", 4, 11, 1, "RG"],
-    ["Site visit", "Bowl assembly handover talk", "c16", 4, 13, 2.5, "DV"],
-    ["Call-out", "Weekend standby, pit pumps", "c5", 5, 8, 3, "TM"],
-    ["Collection", "Collect dewatering pumps x2", "c5", 7, 7, 3, "TM"],
-    ["Site visit", "Quarterly review", "c2", 8, 10, 2, "NP"],
-    ["Delivery", "Deliver 6 stage multistage", "c6", 9, 8, 2, "RG"],
-    ["Inspection", "Borehole pump strip", "c10", 10, 9, 2, "TM"],
-    ["Site visit", "High lift installation check", "c13", -4, 9, 2, "DV"],
-    ["Delivery", "Deliver wear ring set", "c8", -5, 11, 1.5, "RG"],
+    ["Partner meeting", "Collection coordination", "c2", 0, 7, 2.5, "TM"],
+    ["Strategy call", "Logistics assessment", "c1", 0, 11, 2, "DV"],
+    ["Assessment", "Review freight requirements", "c4", 1, 8, 3, "TM"],
+    ["Strategy call", "Mailroom review", "c15", 1, 13, 1.5, "NP"],
+    ["Follow-up", "Urgent shipment coordination", "c14", 1, 18.5, 2, "TM"],
+    ["Service review", "Confirm regional delivery", "c6", 2, 7.5, 2, "RG"],
+    ["Assessment", "Review international route", "c7", 2, 10, 2, "DV"],
+    ["Strategy call", "Provider planning meeting", "c7", 2, 14, 2, "DV"],
+    ["Partner meeting", "Coordinate collection", "c13", 3, 6.5, 3, "TM"],
+    ["Service review", "Confirm customer delivery", "c14", 4, 8, 2, "RG"],
+    ["Strategy call", "Quarterly review", "c2", 8, 10, 2, "NP"],
   ];
   const events: CalEvent[] = ev.map(([kind, title, customerId, off, start, hours, who], i) => ({
     id: `e${i}`, kind, title, customerId, date: iso(addDays(mon, off)), start, hours, who,
@@ -328,19 +282,16 @@ export function seed(now = new Date()): State {
   const at = (m: number) => now.getTime() - m * min;
   const find = (title: string) => deals.find((d) => d.title === title)?.id;
   const activity: Activity[] = [
-    { id: "a1", who: "TM", text: "moved Raw sewage pump refurb to Machine", at: at(18), customerId: "c14" },
-    { id: "a2", who: "DV", text: "sent the quote for Slurry liners and impeller", at: at(64), customerId: "c3", dealId: find("Slurry liners and impeller") },
+    { id: "a1", who: "TM", text: "coordinated an urgent document delivery", at: at(18), customerId: "c14" },
+    { id: "a2", who: "DV", text: "sent an e-commerce fulfilment proposal", at: at(64), customerId: "c3", dealId: find("E-commerce fulfilment") },
     { id: "a3", who: "NP", text: "logged a call with Kagiso Molefe", at: at(141), customerId: "c2" },
-    { id: "a4", who: "LJ", text: "matched a payment from Drakens Paper Mill", at: at(205), customerId: "c6" },
-    { id: "a5", who: "RG", text: "finished boring the DE housing for Ironwood", at: at(322), customerId: "c1" },
-    { id: "a6", who: "DV", text: "added a strip report to Boiler feed pump overhaul", at: at(1490), customerId: "c7", dealId: find("Boiler feed pump overhaul") },
-    { id: "a7", who: "NP", text: "sent a WhatsApp update to Mandla Sithole", at: at(1620), customerId: "c13" },
+    { id: "a4", who: "LJ", text: "matched a payment from Drakens Paper", at: at(205), customerId: "c6" },
+    { id: "a5", who: "RG", text: "confirmed a provider for Ironwood", at: at(322), customerId: "c1" },
   ];
-
   const inbox: InboxItem[] = [
-    { id: "m1", channel: "Website", from: "Themba Nkosi, Delmora Foods", customerId: "c8", text: "CIP supply pump is losing pressure. Can you strip it this week and tell us what it needs?", at: at(26), service: "Pump refurbishment", pumpType: "Multistage", estimate: 61500, urgency: "planned", title: "CIP pump losing pressure", done: false },
-    { id: "m2", channel: "WhatsApp", from: "Nomsa Khoza, Kiaat Coal", customerId: "c5", text: "Pit pump 3 is down since 04:00. Are you open tonight to receive it?", at: at(52), service: "Pump refurbishment", pumpType: "Submersible", estimate: 118000, urgency: "breakdown", title: "Pit pump 3 breakdown", done: false },
-    { id: "m3", channel: "Email", from: "Ruth Adams, Copperleaf Chemicals", customerId: "c7", text: "Please quote six wear rings in bronze to the attached drawing.", at: at(188), service: "Precision machining", pumpType: "Multistage", estimate: 34800, urgency: "planned", title: "Bronze wear rings x6", done: false },
+    { id: "m1", channel: "Website", from: "Themba Nkosi, Delmora Foods", customerId: "c8", text: "Can you assess our regional delivery requirements?", at: at(26), service: "Nationwide courier", pumpType: "Domestic", estimate: 61500, urgency: "planned", title: "Regional delivery assessment", done: false },
+    { id: "m2", channel: "WhatsApp", from: "Nomsa Khoza, Kiaat Supplies", customerId: "c5", text: "We need an urgent delivery arranged. Can you help?", at: at(52), service: "Nationwide courier", pumpType: "Domestic", estimate: 118000, urgency: "breakdown", title: "Urgent delivery", done: false },
+    { id: "m3", channel: "Email", from: "Ruth Adams, Copperleaf Products", customerId: "c7", text: "Please quote on international deliveries for our team.", at: at(188), service: "International courier", pumpType: "International", estimate: 34800, urgency: "planned", title: "International courier quote", done: false },
   ];
 
   const outreach = seedOutreach(t0, now, customers, deals);

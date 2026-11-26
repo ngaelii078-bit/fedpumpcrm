@@ -94,16 +94,16 @@ export function LineArea({ data, target, height = 220, color, format, axis, name
           {data.map((d, i) => ((last - i) % every === 0 ? (
             <text key={d.label + i} x={x(i)} y={height - 5} textAnchor={i === last ? "end" : i === 0 ? "start" : "middle"} style={hi === i ? { fill: "var(--ink)" } : undefined}>{d.label}</text>
           ) : null))}
-          {target !== undefined && <line x1={L} x2={w - R} y1={y(target)} y2={y(target)} stroke="rgba(243,240,233,.75)" strokeWidth="1.5" strokeDasharray="5 4" />}
+          {target !== undefined && <line x1={L} x2={w - R} y1={y(target)} y2={y(target)} stroke="var(--chart-strong)" strokeWidth="1.5" strokeDasharray="5 4" />}
           <g clipPath={`url(#${clip})`}>
             <path d={`${line}L${x(last)},${y(min)}L${x(0)},${y(min)}Z`} fill={color} opacity="0.13" />
             <path d={line} fill="none" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
           </g>
-          {hi === null && <circle cx={x(last)} cy={y(data[last].value)} r="5" fill={color} stroke="#1a2027" strokeWidth="2" />}
+          {hi === null && <circle cx={x(last)} cy={y(data[last].value)} r="5" fill={color} stroke="var(--chart-dot)" strokeWidth="2" />}
           {hi !== null && (
             <g>
-              <line x1={x(hi)} x2={x(hi)} y1={T} y2={height - B} stroke="rgba(243,240,233,.4)" />
-              <circle cx={x(hi)} cy={y(data[hi].value)} r="5.5" fill={color} stroke="#1a2027" strokeWidth="2" />
+              <line x1={x(hi)} x2={x(hi)} y1={T} y2={height - B} stroke="var(--chart-guide)" />
+              <circle cx={x(hi)} cy={y(data[hi].value)} r="5.5" fill={color} stroke="var(--chart-dot)" strokeWidth="2" />
             </g>
           )}
         </svg>
@@ -111,7 +111,7 @@ export function LineArea({ data, target, height = 220, color, format, axis, name
       {hi !== null && w > 0 && (
         <Tip x={x(hi)} y={y(data[hi].value)} w={w}>
           <div className="row"><span className="k" style={{ background: color }} /><b>{format(data[hi].value)}</b><span className="muted">{data[hi].label}{data[hi].note ? `, ${data[hi].note}` : ""}</span></div>
-          {target !== undefined && <div className="row muted"><span className="k" style={{ background: "rgba(243,240,233,.7)" }} /><b>{Math.round((data[hi].value / target) * 100)}%</b> of target</div>}
+          {target !== undefined && <div className="row muted"><span className="k" style={{ background: "var(--chart-strong)" }} /><b>{Math.round((data[hi].value / target) * 100)}%</b> of target</div>}
         </Tip>
       )}
     </div>
@@ -167,7 +167,7 @@ export function Stacked({ data, keys, colors, height = 260, format, axis, percen
                 <g key={d.label + i} tabIndex={0} role="img" aria-label={`${d.label}: ${format(totals[i])}. ${keys.map((k) => `${k} ${format(d.values[k] || 0)}`).join(", ")}`}
                   onPointerEnter={() => setHi(i)} onPointerLeave={() => setHi(null)} onFocus={() => setHi(i)} onBlur={() => setHi(null)} style={{ outline: "none" }}>
                   <rect x={cx - band / 2} y={T} width={band} height={ph + B} fill="transparent" />
-                  <rect x={cx - bw / 2} y={T} width={bw} height={ph} rx="6" fill={hi === i ? "rgba(243,240,233,.09)" : "rgba(243,240,233,.045)"} />
+                  <rect x={cx - bw / 2} y={T} width={bw} height={ph} rx="6" fill={hi === i ? "var(--chart-guide)" : "var(--chart-track)"} />
                   <g data-bar>
                     {segs.map((s, j) => {
                       const lastSeg = j === segs.length - 1;
@@ -278,7 +278,7 @@ export function Donut({ data, size = 190, center, label, name }: {
   return (
     <div style={{ position: "relative", width: size, height: size, margin: "0 auto" }}>
       <svg ref={ref} viewBox="0 0 100 100" width={size} height={size} role="img" aria-label={`${name}. ${data.map((d) => `${d.key} ${d.value}`).join(", ")}`}>
-        <circle cx="50" cy="50" r={r} fill="none" stroke="rgba(243,240,233,.07)" strokeWidth="11" />
+        <circle cx="50" cy="50" r={r} fill="none" stroke="var(--chart-track)" strokeWidth="11" />
         {data.map((d, i) => {
           const len = Math.max(0, (d.value / total) * c - gap);
           const off = -acc;
@@ -317,7 +317,7 @@ export function HBars({ data, color, format }: { data: { label: string; value: n
           <div className="small" style={{ display: "flex", justifyContent: "space-between", marginBottom: 5 }}>
             <span className="muted">{d.label}</span><b className="tnum" style={{ fontWeight: 600 }}>{format(d.value)}</b>
           </div>
-          <div style={{ height: 10, borderRadius: 4, background: "rgba(243,240,233,.07)" }}>
+          <div style={{ height: 10, borderRadius: 4, background: "var(--chart-track)" }}>
             <div data-bar style={{ height: 10, width: `${(d.value / top) * 100}%`, background: color, borderRadius: "0 4px 4px 0" }} />
           </div>
         </div>

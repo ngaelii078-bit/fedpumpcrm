@@ -36,7 +36,7 @@ export default function Reports() {
     return { won, bySeg, segTotals, src, count, rate, cycle, byPump, top, total: sum(won), buyers: new Set(won.map((x) => x.customerId)).size };
   }, [s.deals, n, customer]);
 
-  const csv = () => downloadCsv(`fedpump-revenue-by-industry-${today()}.csv`, [["Month", ...SEGMENTS, "Total"], ...d.bySeg.map((m) => [m.label, ...SEGMENTS.map((g) => m.values[g] as number), SEGMENTS.reduce((a, g) => a + (m.values[g] as number), 0)])]);
+  const csv = () => downloadCsv(`lexbridge-revenue-by-industry-${today()}.csv`, [["Month", ...SEGMENTS, "Total"], ...d.bySeg.map((m) => [m.label, ...SEGMENTS.map((g) => m.values[g] as number), SEGMENTS.reduce((a, g) => a + (m.values[g] as number), 0)])]);
 
   return (
     <div ref={root}>
@@ -84,7 +84,7 @@ export default function Reports() {
         </Panel>
         <Panel className="rep-a" title="Jobs won per month"><Cols name="Jobs won per month" data={d.count} color="#4A90D9" format={int} height={190} /></Panel>
         <Panel className="rep-b" title="Win rate trend" sub="of closed quotes"><LineArea name="Win rate per month" data={d.rate} color="#2FA37A" format={pct} axis={pct} height={190} max={100} /></Panel>
-        <Panel className="rep-c" title="Days to order by pump type"><div style={{ paddingTop: 6 }}><HBars data={d.byPump} color="#BF8632" format={(x) => `${Math.round(x)} days`} /></div></Panel>
+        <Panel className="rep-c" title="Days to order by service category"><div style={{ paddingTop: 6 }}><HBars data={d.byPump} color="#BF8632" format={(x) => `${Math.round(x)} days`} /></div></Panel>
         <Panel className="rep-d" title="Top customers"><div style={{ paddingTop: 6 }}><HBars data={d.top as { label: string; value: number }[]} color="#BF8632" format={zar} /></div></Panel>
       </div>
     </div>

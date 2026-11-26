@@ -1,7 +1,7 @@
 "use client";
 import { useEffect, useMemo, useRef, useState } from "react";
 import gsap from "gsap";
-import { CalendarCheck, ChevronLeft, ChevronRight, Plus, Siren, Truck } from "lucide-react";
+import { CalendarCheck, ChevronLeft, ChevronRight, Plus, Siren, Users } from "lucide-react";
 import { EVENT_KINDS, TEAM } from "@/lib/data";
 import { addDays, dayName, fmtDay, fmtLong, hhmm, int, iso, mondayOf, today } from "@/lib/format";
 import { useStore } from "@/lib/store";
@@ -9,11 +9,11 @@ import type { EventKind } from "@/lib/types";
 import { Avatar, Empty, PageHead, Panel, Seg, reduced, useEnter } from "@/components/ui/bits";
 
 const TONE: Record<EventKind, { k: string; bg: string }> = {
-  "Site visit": { k: "#8FC1EE", bg: "rgba(58,92,124,.78)" },
-  Collection: { k: "#EDB771", bg: "rgba(122,90,44,.8)" },
-  Inspection: { k: "#D9DDE0", bg: "rgba(108,113,117,.6)" },
-  Delivery: { k: "#79CFA8", bg: "rgba(38,96,74,.75)" },
-  "Call-out": { k: "#FF9A7C", bg: "rgba(138,60,38,.82)" },
+  "Strategy call": { k: "#8FC1EE", bg: "rgba(58,92,124,.78)" },
+  Assessment: { k: "#EDB771", bg: "rgba(122,90,44,.8)" },
+  "Partner meeting": { k: "#D9DDE0", bg: "rgba(108,113,117,.6)" },
+  "Follow-up": { k: "#79CFA8", bg: "rgba(38,96,74,.75)" },
+  "Service review": { k: "#FF9A7C", bg: "rgba(138,60,38,.82)" },
 };
 
 export default function Schedule() {
@@ -51,8 +51,8 @@ export default function Schedule() {
         b="schedule"
         kpis={[
           { icon: <CalendarCheck size={18} />, value: inWeek.length, format: int, label: "Booked this week" },
-          { icon: <Truck size={18} />, value: inWeek.filter((e) => e.kind === "Collection" || e.kind === "Delivery").length, format: int, label: "Collections and deliveries" },
-          { icon: <Siren size={18} />, value: inWeek.filter((e) => e.kind === "Call-out").length, format: int, label: "Call-outs", chip: <span className="chip gold">Open 24 hours</span> },
+          { icon: <Users size={18} />, value: inWeek.filter((e) => e.kind === "Strategy call" || e.kind === "Partner meeting").length, format: int, label: "Calls and partner meetings" },
+          { icon: <Siren size={18} />, value: inWeek.filter((e) => e.kind === "Follow-up").length, format: int, label: "Follow-ups" },
         ]}
       />
       <div className="toolbar" data-enter>
@@ -97,7 +97,7 @@ export default function Schedule() {
                       <button key={e.id} className="ev" style={{ top, height: h, background: TONE[e.kind].bg, ["--k" as string]: TONE[e.kind].k }} onClick={() => setOpen({ k: "customer", id: e.customerId })}
                         title={`${e.kind}: ${e.title}. ${customer(e.customerId)?.company}, ${hhmm(e.start)} to ${hhmm(e.start + e.hours)}`}>
                         <b style={{ display: "-webkit-box", WebkitLineClamp: h < 60 ? 1 : 2, WebkitBoxOrient: "vertical", overflow: "hidden" }}>{e.title}</b>
-                        {h >= 60 && <span style={{ color: "rgba(243,240,233,.85)" }}>{hhmm(e.start)}, {TEAM.find((x) => x.id === e.who)?.name}</span>}
+                        {h >= 60 && <span style={{ color: "var(--ink-2)" }}>{hhmm(e.start)}, {TEAM.find((x) => x.id === e.who)?.name}</span>}
                       </button>
                     );
                   })}
@@ -108,7 +108,7 @@ export default function Schedule() {
           </div>
         </div>
         <Panel title="Today" sub={fmtLong(t)}>
-          {todays.length === 0 && <Empty>Nothing booked today. The workshop is still open all night.</Empty>}
+          {todays.length === 0 && <Empty>Nothing booked today.</Empty>}
           <ul style={{ display: "grid", gap: 10, marginTop: 4 }}>
             {todays.map((e) => (
               <li key={e.id}>

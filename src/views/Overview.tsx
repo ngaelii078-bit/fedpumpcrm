@@ -79,7 +79,7 @@ export default function Overview() {
           </div>
           <div className="small muted" style={{ display: "flex", gap: 18, margin: "8px 0 6px", flexWrap: "wrap" }}>
             <span style={{ display: "inline-flex", gap: 8, alignItems: "center" }}><i style={{ width: 14, height: 3, borderRadius: 3, background: "#D9A050" }} />Won revenue</span>
-            <span style={{ display: "inline-flex", gap: 8, alignItems: "center" }}><i style={{ width: 16, borderTop: "2px dashed rgba(243,240,233,.8)" }} />Monthly target {zarK(MONTH_TARGET)}</span>
+            <span style={{ display: "inline-flex", gap: 8, alignItems: "center" }}><i style={{ width: 16, borderTop: "2px dashed var(--chart-strong)" }} />Monthly target {zarK(MONTH_TARGET)}</span>
           </div>
           {table
             ? <DataTable head={["Month", "Won", "Of target"]} rows={months.map((m) => [m.label, zar(m.value), pct((m.value / MONTH_TARGET) * 100)])} />
@@ -100,8 +100,8 @@ export default function Overview() {
               <span className="display" style={{ fontSize: 25, fontWeight: 600 }}><Count value={(wonMonth / MONTH_TARGET) * 100} format={pct} /></span>
             </Flange>
           </div>
-          <p className="small" style={{ textAlign: "center", marginTop: 12, color: "rgba(243,240,233,.88)" }}>
-            {wonMonth >= MONTH_TARGET ? "Target met. All six bolts torqued." : `${zar(MONTH_TARGET - wonMonth)} to go. One bolt per ${zarK(MONTH_TARGET / 6)}.`}
+          <p className="small" style={{ textAlign: "center", marginTop: 12, color: "var(--ink-2)" }}>
+            {wonMonth >= MONTH_TARGET ? "Target met. Great work." : `${zar(MONTH_TARGET - wonMonth)} to go.`}
           </p>
         </Panel>
 
@@ -126,7 +126,7 @@ export default function Overview() {
           </ul>
         </Panel>
 
-        <Panel className="ov-floor" title="On the workshop floor" sub={`${s.jobs.filter((j) => j.done < 6).length} pumps`} actions={<Link className="iconbtn sm" href="/workshop/" aria-label="Open workshop"><ArrowUpRight size={16} /></Link>}>
+        <Panel className="ov-floor" title="Active coordination" sub={`${s.jobs.filter((j) => j.done < 6).length} active engagements`} actions={<Link className="iconbtn sm" href="/workshop/" aria-label="Open coordination"><ArrowUpRight size={16} /></Link>}>
           <ul style={{ display: "grid", gap: 4 }}>
             {jobs.map((j) => {
               const late = daysBetween(today(), j.due);
@@ -136,7 +136,7 @@ export default function Overview() {
                     <Flange done={j.done} size={42} />
                     <span style={{ flex: 1, minWidth: 0 }}>
                       <span className="clip">{j.title}</span>
-                      <span className="small muted clip">{customer(j.customerId)?.company}. {j.done ? `${JOB_STAGES[j.done]} next` : "Receive next"}</span>
+                      <span className="small muted clip">{customer(j.customerId)?.company}. {j.done ? `${JOB_STAGES[j.done]} next` : `${JOB_STAGES[0]} next`}</span>
                     </span>
                     <span className={late <= 1 ? "chip orange" : "chip ghost"}>{late <= 1 ? `Due ${relDay(j.due)}` : fmtDay(j.due)}</span>
                   </Link>
@@ -146,7 +146,7 @@ export default function Overview() {
           </ul>
         </Panel>
 
-        <Panel className="ov-due" title="Refurbs coming due" sub="next 75 days" actions={<button className="btn sm" onClick={() => setOpen({ k: "newCampaign", audience: "due" })}><Send size={14} /> Email all</button>}>
+        <Panel className="ov-due" title="Service reviews coming due" sub="next 75 days" actions={<button className="btn sm" onClick={() => setOpen({ k: "newCampaign", audience: "due" })}><Send size={14} /> Email all</button>}>
           <ul style={{ display: "grid", gap: 4 }}>
             {due.slice(0, 5).map(({ c, p, next, left }) => (
               <li key={p.tag} className="rowlink" style={{ cursor: "default" }}>
@@ -154,11 +154,11 @@ export default function Overview() {
                   <span className="mono clip">{p.tag}</span>
                   <span className="small muted clip">{c.company}. {left < 0 ? `Overdue since ${fmtDay(next)}` : `Due ${fmtDay(next)}`}</span>
                 </span>
-                <button className="btn sm" onClick={() => setOpen({ k: "newDeal", customerId: c.id, title: `Refurbish ${p.tag}`, pumpType: p.type })}>Quote</button>
+                <button className="btn sm" onClick={() => setOpen({ k: "newDeal", customerId: c.id, title: `Review ${p.tag}`, pumpType: p.type })}>Quote</button>
               </li>
             ))}
           </ul>
-          {due.length > 5 && <p className="small dim" style={{ padding: "8px 8px 0" }}>{due.length - 5} more in the pump registers</p>}
+          {due.length > 5 && <p className="small dim" style={{ padding: "8px 8px 0" }}>{due.length - 5} more service profiles</p>}
         </Panel>
 
         <Panel className="ov-act" title="Activity">

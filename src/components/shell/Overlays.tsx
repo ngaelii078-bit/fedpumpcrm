@@ -126,7 +126,7 @@ function DealDrawer({ id, onClose }: { id: string; onClose: () => void }) {
   const closed = !isOpen(d);
   const rows: [string, ReactNode][] = [
     ["Service", d.service],
-    ["Pump", d.pumpType],
+    ["Scope", d.pumpType],
     [closed ? "Closed" : "Expected close", closed ? fmtFull(d.closedAt!) : `${fmtFull(d.closes)}, ${relDay(d.closes)}`],
     ["Logged", fmtFull(d.created)],
     ["Came in through", d.source],
@@ -139,8 +139,8 @@ function DealDrawer({ id, onClose }: { id: string; onClose: () => void }) {
       head={
         <>
           <span className="mono muted">{d.id}</span>
-          {d.urgency === "breakdown" && <span className="chip orange">Breakdown</span>}
-          {d.urgency === "shutdown" && <span className="chip blue">Shutdown</span>}
+          {d.urgency === "breakdown" && <span className="chip orange">Urgent</span>}
+          {d.urgency === "shutdown" && <span className="chip blue">Project deadline</span>}
           {d.status === "won" && <span className="chip green">Won</span>}
           {d.status === "lost" && <span className="chip ghost">Lost</span>}
         </>
@@ -164,7 +164,7 @@ function DealDrawer({ id, onClose }: { id: string; onClose: () => void }) {
       <div style={{ display: "grid", gridTemplateColumns: "repeat(4,1fr)", gap: 6 }}>
         {STAGES.map((st, i) => (
           <button key={st.id} onClick={() => moveDeal(d.id, st.id)} aria-pressed={d.status === st.id}
-            style={{ textAlign: "left", fontSize: 12, paddingTop: 9, borderTop: `3px solid ${(closed && d.status === "won") || i <= idx ? st.dot : "rgba(243,240,233,.18)"}`, color: i === idx ? "var(--ink)" : "var(--ink-2)", fontWeight: i === idx ? 600 : 400 }}>
+            style={{ textAlign: "left", fontSize: 12, paddingTop: 9, borderTop: `3px solid ${(closed && d.status === "won") || i <= idx ? st.dot : "var(--line-2)"}`, color: i === idx ? "var(--ink)" : "var(--ink-2)", fontWeight: i === idx ? 600 : 400 }}>
             {st.name}
           </button>
         ))}
@@ -179,7 +179,7 @@ function DealDrawer({ id, onClose }: { id: string; onClose: () => void }) {
       </dl>
       {job && (
         <>
-          <Sub>On the workshop floor</Sub>
+          <Sub>Service coordination</Sub>
           <div className="panel" style={{ padding: 14, display: "flex", gap: 12, alignItems: "center" }}>
             <Wrench size={18} className="muted" />
             <div><b className="mono" style={{ fontWeight: 500 }}>{job.id}</b><div className="small muted">{job.done} of 6 stages signed off, due {fmtDay(job.due)}</div></div>
@@ -241,8 +241,8 @@ function CustomerDrawer({ id, onClose }: { id: string; onClose: () => void }) {
           <button className="btn sm" style={{ height: 28 }} onClick={() => dispatch({ t: "optOut", id, on: !c.optOut })}>{c.optOut ? "Allow again" : "Take off list"}</button>
         </dd>
       </dl>
-      <Sub>Pump register</Sub>
-      {c.pumps.length === 0 && <Empty>No pumps on record yet.</Empty>}
+      <Sub>Service reviews</Sub>
+      {c.pumps.length === 0 && <Empty>No service reviews on record yet.</Empty>}
       <ul style={{ display: "grid", gap: 9 }}>
         {c.pumps.map((p) => {
           const next = nextRefurb(p);
@@ -252,11 +252,11 @@ function CustomerDrawer({ id, onClose }: { id: string; onClose: () => void }) {
             <li key={p.tag} style={{ background: "var(--well)", borderRadius: 13, padding: "11px 13px" }}>
               <div style={{ display: "flex", gap: 10, alignItems: "center" }}>
                 <div style={{ flex: 1, minWidth: 0 }}><div className="mono">{p.tag}</div><div className="small muted">{p.type}. {p.desc}</div></div>
-                <button className="btn sm" onClick={() => setOpen({ k: "newDeal", customerId: id, title: `Refurbish ${p.tag}`, pumpType: p.type })}>Quote refurb</button>
+                <button className="btn sm" onClick={() => setOpen({ k: "newDeal", customerId: id, title: `Review ${p.tag}`, pumpType: p.type })}>New enquiry</button>
               </div>
               <div style={{ display: "flex", alignItems: "center", gap: 10, marginTop: 9 }}>
                 <span className={"meter" + (left < 30 ? " hot" : "")}><i style={{ width: `${used * 100}%` }} /></span>
-                <span className="small muted" style={{ whiteSpace: "nowrap" }}>{left < 0 ? "Refurb overdue" : `Due ${fmtSoon(next)}`}</span>
+                <span className="small muted" style={{ whiteSpace: "nowrap" }}>{left < 0 ? "Review overdue" : `Due ${fmtSoon(next)}`}</span>
               </div>
             </li>
           );
@@ -296,7 +296,7 @@ const num = (v: string) => Number(v.replace(/[^\d.]/g, ""));
 function NewDeal({ preset, onClose }: { preset: { customerId?: string; title?: string; pumpType?: PumpType }; onClose: () => void }) {
   const { s, addDeal, toast } = useStore();
   const router = useRouter();
-  const [f, setF] = useState({ title: preset.title ?? "", customerId: preset.customerId ?? "", value: "", service: SERVICES[0] as Service, pumpType: preset.pumpType ?? ("Multistage" as PumpType), urgency: "planned" as Urgency, source: "Phone" as Source, closes: "14" });
+  const [f, setF] = useState({ title: preset.title ?? "", customerId: preset.customerId ?? "", value: "", service: SERVICES[0] as Service, pumpType: preset.pumpType ?? ("Domestic" as PumpType), urgency: "planned" as Urgency, source: "Phone" as Source, closes: "14" });
   const [err, setErr] = useState<Record<string, string>>({});
   const up = (k: string) => (e: { target: { value: string } }) => setF((x) => ({ ...x, [k]: e.target.value }));
   return (
@@ -317,7 +317,7 @@ function NewDeal({ preset, onClose }: { preset: { customerId?: string; title?: s
         }}>
           <H leave={leave}>New enquiry</H>
           <div className="form">
-            <Field label="What needs doing" full error={err.title}><input data-autofocus className="inp" value={f.title} onChange={up("title")} placeholder="Slurry pump, wet end worn" /></Field>
+            <Field label="What needs doing" full error={err.title}><input data-autofocus className="inp" value={f.title} onChange={up("title")} placeholder="Nationwide parcel delivery requirements" /></Field>
             <Field label="Customer" error={err.customerId}>
               <select className="inp" value={f.customerId} onChange={up("customerId")}>
                 <option value="">Choose a customer</option>
@@ -326,8 +326,8 @@ function NewDeal({ preset, onClose }: { preset: { customerId?: string; title?: s
             </Field>
             <Field label="Estimate, excl. VAT" error={err.value}><input className="inp" inputMode="numeric" value={f.value} onChange={up("value")} placeholder="85 000" /></Field>
             <Field label="Service"><select className="inp" value={f.service} onChange={up("service")}>{SERVICES.map((x) => <option key={x}>{x}</option>)}</select></Field>
-            <Field label="Pump type"><select className="inp" value={f.pumpType} onChange={up("pumpType")}>{PUMP_TYPES.map((x) => <option key={x}>{x}</option>)}</select></Field>
-            <Field label="Urgency"><select className="inp" value={f.urgency} onChange={up("urgency")}><option value="planned">Planned</option><option value="breakdown">Breakdown</option><option value="shutdown">Shutdown</option></select></Field>
+            <Field label="Logistics scope"><select className="inp" value={f.pumpType} onChange={up("pumpType")}>{PUMP_TYPES.map((x) => <option key={x}>{x}</option>)}</select></Field>
+            <Field label="Urgency"><select className="inp" value={f.urgency} onChange={up("urgency")}><option value="planned">Planned</option><option value="breakdown">Urgent</option><option value="shutdown">Project deadline</option></select></Field>
             <Field label="Expected close"><select className="inp" value={f.closes} onChange={up("closes")}><option value="2">In 2 days</option><option value="7">In a week</option><option value="14">In 2 weeks</option><option value="30">In a month</option></select></Field>
           </div>
           <div style={{ display: "flex", gap: 10, justifyContent: "flex-end", marginTop: 20 }}>
@@ -342,7 +342,7 @@ function NewDeal({ preset, onClose }: { preset: { customerId?: string; title?: s
 
 function NewCustomer({ onClose }: { onClose: () => void }) {
   const { addCustomer, setOpen, toast } = useStore();
-  const [f, setF] = useState({ contact: "", role: "", company: "", segment: "Mining" as Segment, town: "", phone: "", email: "" });
+  const [f, setF] = useState({ contact: "", role: "", company: "", segment: "Retail" as Segment, town: "", phone: "", email: "" });
   const [err, setErr] = useState<Record<string, string>>({});
   const up = (k: string) => (e: { target: { value: string } }) => setF((x) => ({ ...x, [k]: e.target.value }));
   return (
@@ -363,7 +363,7 @@ function NewCustomer({ onClose }: { onClose: () => void }) {
           <H leave={leave}>New customer</H>
           <div className="form">
             <Field label="Contact name" error={err.contact}><input data-autofocus className="inp" value={f.contact} onChange={up("contact")} /></Field>
-            <Field label="Role"><input className="inp" value={f.role} onChange={up("role")} placeholder="Maintenance planner" /></Field>
+            <Field label="Role"><input className="inp" value={f.role} onChange={up("role")} placeholder="Logistics manager" /></Field>
             <Field label="Company" error={err.company}><input className="inp" value={f.company} onChange={up("company")} /></Field>
             <Field label="Industry"><select className="inp" value={f.segment} onChange={up("segment")}>{SEGMENTS.map((x) => <option key={x}>{x}</option>)}</select></Field>
             <Field label="Phone" error={err.phone}><input className="inp" inputMode="tel" value={f.phone} onChange={up("phone")} /></Field>
@@ -382,7 +382,7 @@ function NewCustomer({ onClose }: { onClose: () => void }) {
 
 function NewEvent({ preset, onClose }: { preset: { date?: string; start?: number }; onClose: () => void }) {
   const { s, dispatch, toast } = useStore();
-  const [f, setF] = useState({ kind: "Site visit" as EventKind, title: "", customerId: s.customers[0].id, date: preset.date ?? today(), start: String(preset.start ?? 9), hours: "1.5", who: "DV" });
+  const [f, setF] = useState({ kind: "Strategy call" as EventKind, title: "", customerId: s.customers[0].id, date: preset.date ?? today(), start: String(preset.start ?? 9), hours: "1.5", who: "DV" });
   const [err, setErr] = useState("");
   const up = (k: string) => (e: { target: { value: string } }) => setF((x) => ({ ...x, [k]: e.target.value }));
   return (
@@ -398,7 +398,7 @@ function NewEvent({ preset, onClose }: { preset: { date?: string; start?: number
         }}>
           <H leave={leave}>Book a slot</H>
           <div className="form">
-            <Field label="Description" full error={err}><input data-autofocus className="inp" value={f.title} onChange={up("title")} placeholder="Measure bearing housings" /></Field>
+            <Field label="Description" full error={err}><input data-autofocus className="inp" value={f.title} onChange={up("title")} placeholder="Discuss delivery requirements" /></Field>
             <Field label="Type"><select className="inp" value={f.kind} onChange={up("kind")}>{EVENT_KINDS.map((x) => <option key={x}>{x}</option>)}</select></Field>
             <Field label="Customer"><select className="inp" value={f.customerId} onChange={up("customerId")}>{s.customers.map((c) => <option key={c.id} value={c.id}>{c.company}</option>)}</select></Field>
             <Field label="Date"><input className="inp" type="date" value={f.date} onChange={up("date")} /></Field>
@@ -449,11 +449,11 @@ function NewCampaign({ preset, onClose }: { preset: { audience?: AudienceKey; se
   const { s, dispatch, toast } = useStore();
   const router = useRouter();
   const [aud, setAud] = useState<AudienceKey>(preset.audience ?? "due");
-  const [seg, setSeg] = useState<Segment | "All">(preset.segment ?? (preset.audience === "prospects" ? "Agriculture" : "All"));
+  const [seg, setSeg] = useState<Segment | "All">(preset.segment ?? (preset.audience === "prospects" ? "E-commerce" : "All"));
   const [name, setName] = useState("");
   const cold = aud === "prospects";
   const built = useMemo(() => buildAudience(s, aud, seg), [s, aud, seg]);
-  const steps = useMemo(() => stepsFor(aud, seg === "All" ? "Mining" : seg), [aud, seg]);
+  const steps = useMemo(() => stepsFor(aud, seg === "All" ? "Retail" : seg), [aud, seg]);
   const auto = `${AUDIENCES[aud].name}${seg === "All" ? "" : ", " + seg.toLowerCase()}`;
   const save = (start: boolean) => {
     const c: Campaign = { id: "k" + Date.now().toString(36), name: name.trim() || auto, audience: aud, segment: seg, status: "Draft", steps, recipients: built.list };
@@ -475,11 +475,11 @@ function NewCampaign({ preset, onClose }: { preset: { audience?: AudienceKey; se
               <fieldset style={{ display: "grid", gap: 8 }}>
                 <legend className="lab">Who gets it</legend>
                 {(Object.keys(AUDIENCES) as AudienceKey[]).map((k) => {
-                  const kSeg = k === "prospects" ? (seg === "All" ? "Agriculture" : seg) : k === aud ? seg : "All";
+                  const kSeg = k === "prospects" ? (seg === "All" ? "E-commerce" : seg) : k === aud ? seg : "All";
                   const n = buildAudience(s, k, kSeg).list.length;
                   return (
                     <label key={k} className={"pick" + (aud === k ? " on" : "")}>
-                      <input type="radio" name="aud" checked={aud === k} onChange={() => { setAud(k); setSeg(k === "prospects" ? "Agriculture" : "All"); }} />
+                      <input type="radio" name="aud" checked={aud === k} onChange={() => { setAud(k); setSeg(k === "prospects" ? "E-commerce" : "All"); }} />
                       <span style={{ flex: 1, minWidth: 0 }}><b style={{ fontWeight: 600 }}>{AUDIENCES[k].name}</b><span className="small muted" style={{ display: "block" }}>{AUDIENCES[k].blurb}</span></span>
                       <span className="display tnum" style={{ fontWeight: 600, fontSize: 18 }}>{n}</span>
                     </label>
@@ -529,7 +529,7 @@ function LogCall({ preset, onClose }: { preset?: string; onClose: () => void }) 
           <H leave={leave}>Log a call</H>
           <div className="form">
             <Field label="Customer" full><select className="inp" value={id} onChange={(e) => setId(e.target.value)}>{s.customers.map((c) => <option key={c.id} value={c.id}>{c.contact}, {c.company}</option>)}</select></Field>
-            <Field label="Notes" full><textarea data-autofocus className="inp" rows={4} value={note} onChange={(e) => setNote(e.target.value)} placeholder="Wants the quote split per pump" /></Field>
+            <Field label="Notes" full><textarea data-autofocus className="inp" rows={4} value={note} onChange={(e) => setNote(e.target.value)} placeholder="Discuss delivery volumes and service requirements" /></Field>
           </div>
           <div style={{ display: "flex", gap: 10, justifyContent: "flex-end", marginTop: 18 }}>
             <button type="button" className="btn" onClick={leave}>Cancel</button>
@@ -551,7 +551,7 @@ function SearchBox({ onClose }: { onClose: () => void }) {
     const t = q.trim().toLowerCase();
     const out: { key: string; icon: ReactNode; a: string; b: string; go: () => void }[] = [];
     const hit = (...x: string[]) => x.some((v) => v.toLowerCase().includes(t));
-    for (const [n, href] of [["Overview", "/"], ["Pipeline", "/pipeline/"], ["Customers", "/customers/"], ["Outreach", "/outreach/"], ["Schedule", "/schedule/"], ["Workshop", "/workshop/"], ["Finance", "/finance/"], ["Reports", "/reports/"]])
+    for (const [n, href] of [["Overview", "/"], ["Pipeline", "/pipeline/"], ["Customers", "/customers/"], ["Outreach", "/outreach/"], ["Schedule", "/schedule/"], ["Operations", "/workshop/"], ["Finance", "/finance/"], ["Reports", "/reports/"]])
       if (!t || hit(n)) out.push({ key: href, icon: <FileText size={16} />, a: n, b: "Page", go: () => { onClose(); router.push(href); } });
     s.customers.filter((c) => t && hit(c.contact, c.company, c.town, c.segment, ...c.pumps.map((p) => p.tag))).slice(0, 5).forEach((c: Customer) =>
       out.push({ key: c.id, icon: <User size={16} />, a: c.company, b: `${c.contact}, ${c.town}`, go: () => setOpen({ k: "customer", id: c.id }) }));
@@ -568,7 +568,7 @@ function SearchBox({ onClose }: { onClose: () => void }) {
         <div>
           <div className="field" style={{ height: 58, borderRadius: "24px 24px 0 0", border: 0, borderBottom: "1px solid var(--line)", padding: "0 20px" }}>
             <Search size={18} />
-            <input data-autofocus value={q} onChange={(e) => setQ(e.target.value)} placeholder="Customer, quote, job or pump tag" aria-label="Search" style={{ fontSize: 16 }}
+            <input data-autofocus value={q} onChange={(e) => setQ(e.target.value)} placeholder="Customer, enquiry, project or service reference" aria-label="Search" style={{ fontSize: 16 }}
               onKeyDown={(e) => {
                 if (e.key === "ArrowDown") { e.preventDefault(); setI((x) => Math.min(list.length - 1, x + 1)); }
                 if (e.key === "ArrowUp") { e.preventDefault(); setI((x) => Math.max(0, x - 1)); }
@@ -576,7 +576,7 @@ function SearchBox({ onClose }: { onClose: () => void }) {
               }} />
           </div>
           <div style={{ padding: 8 }}>
-            {list.length === 0 && <Empty>Nothing matches that. Try a company name or a pump tag.</Empty>}
+            {list.length === 0 && <Empty>Nothing matches that. Try a company name or a service reference.</Empty>}
             {list.map((x, k) => (
               <button key={x.key} onClick={x.go} onPointerEnter={() => setI(k)} tabIndex={-1}
                 style={{ display: "flex", gap: 12, alignItems: "center", width: "100%", textAlign: "left", padding: "10px 13px", borderRadius: 14, background: k === i ? "var(--well-2)" : "transparent" }}>

@@ -10,7 +10,7 @@ import {
 } from "lucide-react";
 import { ME, stageOf } from "@/lib/data";
 import { ago, daysBetween, downloadCsv, fmtDay, today, zarK } from "@/lib/format";
-import { VAT, isOpen, nextRefurb, useStore } from "@/lib/store";
+import { VAT, isOpen, useStore } from "@/lib/store";
 import { Avatar, Empty, reduced, useIso } from "../ui/bits";
 import { Overlays } from "./Overlays";
 import { lenisTop, setLenis } from "./lenis";
@@ -21,7 +21,7 @@ const NAV = [
   { href: "/customers/", label: "Customers", icon: Users },
   { href: "/outreach/", label: "Outreach", icon: Send },
   { href: "/schedule/", label: "Schedule", icon: CalendarDays },
-  { href: "/workshop/", label: "Workshop", icon: Factory },
+  { href: "/workshop/", label: "Operations", icon: Factory },
   { href: "/finance/", label: "Finance", icon: Banknote },
   { href: "/reports/", label: "Reports", icon: ChartColumn },
 ];
@@ -136,15 +136,13 @@ function BellPop({ push }: { push: (h: string) => void }) {
     const t = today();
     const out: { k: string; icon: ReactNode; a: string; b: string; go: () => void }[] = [];
     s.deals.filter((d) => isOpen(d) && d.urgency === "breakdown").slice(0, 2).forEach((d) =>
-      out.push({ k: d.id, icon: <Siren size={16} />, a: `Breakdown: ${d.title}`, b: `${customer(d.customerId)?.company}, ${stageOf(d.status)!.name}`, go: () => setOpen({ k: "deal", id: d.id }) }));
+      out.push({ k: d.id, icon: <Siren size={16} />, a: `Urgent: ${d.title}`, b: `${customer(d.customerId)?.company}, ${stageOf(d.status)!.name}`, go: () => setOpen({ k: "deal", id: d.id }) }));
     s.jobs.filter((j) => j.done < 6 && daysBetween(t, j.due) <= 1).forEach((j) =>
       out.push({ k: j.id, icon: <Wrench size={16} />, a: `${j.id} due ${j.due === t ? "today" : "tomorrow"}`, b: `${j.title}, ${j.done} of 6 stages`, go: () => push("/workshop/#" + j.id) }));
     const waiting = s.replies.filter((m) => !m.done);
     if (waiting.length) out.push({ k: "rep", icon: <Reply size={16} />, a: `${waiting.length} outreach ${waiting.length === 1 ? "reply" : "replies"} waiting`, b: "Aim to answer within 5 minutes", go: () => push("/outreach/") });
     const od = s.invoices.filter((i) => i.status === "Overdue");
     if (od.length) out.push({ k: "od", icon: <Banknote size={16} />, a: `${od.length} invoices overdue`, b: `${zarK(od.reduce((a, i) => a + i.amount * VAT, 0))} incl. VAT`, go: () => push("/finance/") });
-    const due = s.customers.flatMap((c) => c.pumps.map((p) => ({ c, p, n: nextRefurb(p) }))).filter((x) => daysBetween(t, x.n) <= 30);
-    if (due.length) out.push({ k: "rf", icon: <RotateCcw size={16} />, a: `${due.length} pumps due for refurb within 30 days`, b: "From the customer pump registers", go: () => push("/customers/") });
     return out;
   }, [s, customer, setOpen, push]);
   return (
@@ -242,18 +240,18 @@ export function Shell({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     try {
-      setNight(localStorage.getItem("fedpump-shift") === "night");
+      setNight(localStorage.getItem("lexbridge-theme") === "night");
     } catch {}
   }, []);
   useEffect(() => {
     document.documentElement.dataset.shift = night ? "night" : "day";
     try {
-      localStorage.setItem("fedpump-shift", night ? "night" : "day");
+      localStorage.setItem("lexbridge-theme", night ? "night" : "day");
     } catch {}
   }, [night]);
 
   const exportAll = () =>
-    downloadCsv(`fedpump-pipeline-${today()}.csv`, [
+    downloadCsv(`lexbridge-pipeline-${today()}.csv`, [
       ["Ref", "Title", "Customer", "Stage", "Value excl VAT", "Closes"],
       ...s.deals.filter(isOpen).map((d) => [d.id, d.title, s.customers.find((c) => c.id === d.customerId)?.company ?? "", stageOf(d.status)!.name, d.value, fmtDay(d.closes)]),
     ]);
@@ -269,14 +267,14 @@ export function Shell({ children }: { children: ReactNode }) {
   ];
   const tail = [
     { l: "Reset demo data", i: RotateCcw, f: reset },
-    { l: night ? "Day shift" : "Night shift", i: night ? Sun : Moon, f: () => setNight((n) => !n) },
+    { l: night ? "Light mode" : "Dark mode", i: night ? Sun : Moon, f: () => setNight((n) => !n) },
   ];
 
   return (
     <>
       <div className="backdrop" aria-hidden="true">
         {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img src="/brand/backdrop.webp" alt="" width={1200} height={900} />
+        <img src="/brand/lexbridge-knot.webp" alt="" width={1440} height={352} />
         <div className="night" />
       </div>
       <div className="grain" aria-hidden="true" />
@@ -293,9 +291,9 @@ export function Shell({ children }: { children: ReactNode }) {
         <div className="shell">
           <div className={"topbar" + (stuck ? " stuck" : "")}>
             <div className="brand">
-              <Link href="/" onClick={(e) => go(e, "/")} aria-label="Fedpump, go to overview">
+              <Link href="/" onClick={(e) => go(e, "/")} aria-label="LexBridge Group, go to overview">
                 {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img src="/brand/fedpump-logo.png" alt="Fedpump" width={222} height={157} />
+                <img src="/brand/lexbridge-logo.png" alt="LexBridge Group" width={380} height={150} />
               </Link>
               <span className="demo-chip">Demo data</span>
             </div>

@@ -35,7 +35,7 @@ server.on("error", (e) => {
 });
 server.on("listening", () => {
   const url = `http://localhost:${port}/`;
-  console.log(`Fedpump CRM demo: ${url}`);
+  console.log(`LexBridge CRM demo: ${url}`);
   if (process.argv.includes("--open")) exec(process.platform === "win32" ? `start "" ${url}` : `open ${url}`);
 });
 server.listen(port, "127.0.0.1");
