@@ -60,8 +60,8 @@ function reduce(s: State, a: Action): State {
         } else {
           const no = Math.max(...jobs.map((j) => +j.id.slice(3))) + 1;
           const job: Job = {
-            id: `LB-${no}`, dealId: d.id, customerId: d.customerId, title: d.title, pumpType: d.pumpType, done: 3,
-            due: iso(addDays(new Date(), 14)), machine: d.service === "Transport & warehousing" ? "Warehousing" : "Domestic courier",
+            id: `RB-${no}`, dealId: d.id, customerId: d.customerId, title: d.title, pumpType: d.pumpType, done: 3,
+            due: iso(addDays(new Date(), 14)), machine: d.pumpType,
             urgency: d.urgency, photo: "casing", parts: partsFor(d.pumpType, "orxrrrrrorr"),
           };
           jobs = [job, ...jobs];
@@ -208,7 +208,7 @@ export type Overlay =
   | { k: "search" };
 
 const C = createContext<Ctx | null>(null);
-const KEY = "lexbridge-crm-demo-v1";
+const KEY = "rebotech-crm-demo-v1";
 const EMPTY: State = { seedDay: "", deals: [], customers: [], jobs: [], invoices: [], events: [], activity: [], inbox: [], prospects: [], campaigns: [], replies: [] };
 
 export function StoreProvider({ children }: { children: ReactNode }) {
@@ -257,7 +257,7 @@ export function StoreProvider({ children }: { children: ReactNode }) {
       raw({ t: "move", id, to, pos });
       if (d.status === to) return;
       const undo = () => raw({ t: "set", state: before });
-      if (to === "won") toast(`Won. ${d.title} is in operations.`, undo);
+      if (to === "won") toast(`Won. ${d.title} is in the workshop.`, undo);
       else if (to === "lost") toast(`${d.title} marked as lost.`, undo);
       else toast(`${d.title} moved to ${stageOf(to)!.name}.`, undo);
     },
@@ -270,7 +270,7 @@ export function StoreProvider({ children }: { children: ReactNode }) {
     const first = Math.min(0, ...st.deals.filter((d) => d.status === "enquiry").map((d) => d.pos));
     const { closesIn, ...rest } = n;
     const deal: Deal = {
-      ...rest, id: `LQ-${no}`, status: "enquiry", created: today(), closes: iso(addDays(new Date(), closesIn)), owners: [ME.id], pos: first - 10,
+      ...rest, id: `RQ-${no}`, status: "enquiry", created: today(), closes: iso(addDays(new Date(), closesIn)), owners: [ME.id], pos: first - 10,
     };
     raw({ t: "addDeal", deal });
     return deal.id;
@@ -308,7 +308,7 @@ export function StoreProvider({ children }: { children: ReactNode }) {
         k.kind === "customer"
           ? k.id
           : addCustomer({ contact: k.name, role: k.role, company: k.company, segment: k.segment, town: k.town, phone: "Not given", email: k.email, source: "Outreach" });
-      const dealId = addDeal({ title: m.title, customerId, value: m.estimate, service: "Nationwide courier", pumpType: m.pumpType, urgency: "planned", source: "Outreach", closesIn: 14 });
+      const dealId = addDeal({ title: m.title, customerId, value: m.estimate, service: "Assessment", pumpType: m.pumpType, urgency: "planned", source: "Outreach", closesIn: 14 });
       raw({ t: "replyDone", id, dealId, customerId: k.kind === "prospect" ? customerId : undefined });
       toast(`${dealId} added to Enquiry${k.kind === "prospect" ? `, and ${k.company} is now a customer` : ""}.`);
       return dealId;

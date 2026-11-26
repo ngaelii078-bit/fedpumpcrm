@@ -60,7 +60,7 @@ export default function Finance() {
     })
     .sort((a, b) => (f === "Open" ? a.due.localeCompare(b.due) : b.id.localeCompare(a.id)));
 
-  const csv = () => downloadCsv(`lexbridge-invoices-${t}.csv`, [
+  const csv = () => downloadCsv(`rebotech-invoices-${t}.csv`, [
     ["Invoice", "Customer", "Work", "Date", "Due", "Status", "Excl VAT", "Incl VAT"],
     ...rows.map((i) => [i.id, customer(i.customerId)?.company, i.title, i.date, i.due, i.status, i.amount, Math.round(inc(i.amount))]),
   ]);
@@ -72,7 +72,7 @@ export default function Finance() {
         b="invoices"
         kpis={[
           { icon: <Banknote size={18} />, value: total(paidMonth), format: zar, label: "Paid this month, incl. VAT" },
-          { icon: <Clock3 size={18} />, value: total(owing), format: zar, label: "Owed to LexBridge, incl. VAT" },
+          { icon: <Clock3 size={18} />, value: total(owing), format: zar, label: "Owed to Rebotech, incl. VAT" },
           { icon: <CircleAlert size={18} />, value: total(overdue), format: zar, label: "Overdue", chip: overdue.length ? <span className="chip orange">{overdue.length} invoices</span> : undefined },
         ]}
         right={<button className="btn gold" onClick={csv}><Download size={16} /> Export CSV</button>}

@@ -50,14 +50,14 @@ export const Avatars = ({ ids, size = 25 }: { ids: string[]; size?: number }) =>
   <span className="avs">{ids.map((i) => <Avatar key={i} id={i} size={size} />)}</span>
 );
 
-const SEG_TONE: Record<string, string> = { Retail: "#F4D9B4", Manufacturing: "#C4DDF2", "E-commerce": "#F3C7B5", Services: "#CBE6D5" };
+const SEG_TONE: Record<string, string> = { Mining: "#F4D9B4", Manufacturing: "#C4DDF2", Engineering: "#F3C7B5", Contractors: "#CBE6D5" };
 export const Initials = ({ name, segment, size = 46 }: { name: string; segment: string; size?: number }) => (
   <span className="av" style={{ width: size, height: size, background: SEG_TONE[segment], fontSize: size * 0.33 }}>
     {name.split(" ").map((w) => w[0]).slice(0, 2).join("")}
   </span>
 );
 
-/** Six milestones in the service coordination process. */
+/** Six milestones in the workshop process. */
 const STAR = [0, 1, 2, 3, 4, 5];
 export function Flange({ done, size = 44, children, ring = true, color = "var(--gold)" }: {
   done: number; size?: number; children?: ReactNode; ring?: boolean; color?: string;

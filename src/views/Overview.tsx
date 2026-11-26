@@ -126,7 +126,7 @@ export default function Overview() {
           </ul>
         </Panel>
 
-        <Panel className="ov-floor" title="Active coordination" sub={`${s.jobs.filter((j) => j.done < 6).length} active engagements`} actions={<Link className="iconbtn sm" href="/workshop/" aria-label="Open coordination"><ArrowUpRight size={16} /></Link>}>
+        <Panel className="ov-floor" title="Active workshop jobs" sub={`${s.jobs.filter((j) => j.done < 6).length} active jobs`} actions={<Link className="iconbtn sm" href="/workshop/" aria-label="Open workshop"><ArrowUpRight size={16} /></Link>}>
           <ul style={{ display: "grid", gap: 4 }}>
             {jobs.map((j) => {
               const late = daysBetween(today(), j.due);

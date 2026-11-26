@@ -4,12 +4,12 @@ import type {
 } from "./types";
 
 /* Demo outreach settings: no messages are sent. */
-export const SIGN = ["Naledi", "LexBridge", "Logistics coordination"];
+export const SIGN = ["Rebotech", "Engineering and fabrication"];
 export const STOP_LINE = "Reply stop and I will take you off this list.";
 
 export const DOMAINS = [
-  { name: "lexbridge-mail.example", boxes: 5, health: 100, warm: 14, cap: 150 },
-  { name: "lexbridge-outreach.example", boxes: 5, health: 86, warm: 9, cap: 0 },
+  { name: "rebotech-mail.example", boxes: 5, health: 100, warm: 14, cap: 150 },
+  { name: "rebotech-outreach.example", boxes: 5, health: 86, warm: 9, cap: 0 },
 ];
 export const DAILY_CAP = DOMAINS.reduce((a, d) => a + d.cap, 0);
 
@@ -21,26 +21,26 @@ export const AUDIENCES: Record<AudienceKey, { name: string; blurb: string; kind:
 };
 
 const OPENER: Record<Segment, string> = {
-  Retail: "I would like to learn about your store delivery needs in {{city}}.",
-  Manufacturing: "I would like to learn about your transport needs in {{city}}.",
-  "E-commerce": "I would like to learn about your order delivery needs in {{city}}.",
-  Services: "I would like to learn about your courier and mailroom needs in {{city}}.",
+  Mining: "I would like to learn about your equipment needs in {{city}}.",
+  Manufacturing: "I would like to learn about your plant equipment needs in {{city}}.",
+  Engineering: "I would like to learn about your fabrication work in {{city}}.",
+  Contractors: "I would like to learn about your site work in {{city}}.",
 };
 
-export function stepsFor(key: AudienceKey, seg: Segment = "Retail"): CampaignStep[] {
+export function stepsFor(key: AudienceKey, seg: Segment = "Mining"): CampaignStep[] {
   if (key === "due") return [
     { day: 0, subject: "Review: {{serviceRef}}", body: "Hi {{firstName}},\n\nYour service review for {{serviceRef}} is due on {{dueDate}}.\n\nWould you like to schedule a review?" },
     { day: 4, subject: "Re: {{serviceRef}}", body: "Hi {{firstName}},\n\nFollowing up on your service review for {{serviceRef}}.\n\nWhat day suits you?" },
   ];
   if (key === "quiet") return [
-    { day: 0, subject: "{{companyName}} logistics", body: "Hi {{firstName}},\n\nIt has been {{quietDays}} days since we last spoke.\n\nWould you like to review your delivery needs?" },
-    { day: 5, subject: "Re: {{companyName}} logistics", body: "Hi {{firstName}},\n\nCould we arrange a short call?" },
+    { day: 0, subject: "{{companyName}} equipment", body: "Hi {{firstName}},\n\nIt has been {{quietDays}} days since we last spoke.\n\nDo you have any repair or fabrication work to discuss?" },
+    { day: 5, subject: "Re: {{companyName}} equipment", body: "Hi {{firstName}},\n\nCould we arrange a short call?" },
   ];
   if (key === "lost") return [
-    { day: 0, subject: "{{quoteRef}}", body: "Hi {{firstName}},\n\nWe discussed {{quoteTitle}} in {{quoteMonth}}.\n\nHave your logistics needs changed?" },
-    { day: 6, subject: "Re: {{quoteRef}}", body: "Hi {{firstName}},\n\nMay I follow up on your delivery plans?" },
+    { day: 0, subject: "{{quoteRef}}", body: "Hi {{firstName}},\n\nWe discussed {{quoteTitle}} in {{quoteMonth}}.\n\nHave your project needs changed?" },
+    { day: 6, subject: "Re: {{quoteRef}}", body: "Hi {{firstName}},\n\nMay I follow up on your plans?" },
   ];
-  return [{ day: 0, subject: "{{companyName}} logistics", body: `Hi {{firstName}},\n\n${OPENER[seg]}\n\nLexBridge assesses requirements and coordinates logistics providers.\n\nCould we arrange a short call?` }];
+  return [{ day: 0, subject: "{{companyName}} engineering", body: `Hi {{firstName}},\n\n${OPENER[seg]}\n\nRebotech builds, fabricates and repairs equipment.\n\nCould we arrange a short call?` }];
 }
 
 /* merge fields each audience can use */
@@ -171,8 +171,8 @@ export function presend(step: CampaignStep, key: AudienceKey, first: boolean) {
 /* ---------------- replies ---------------- */
 export const REPLY_LABEL: Record<ReplyKind, string> = { quote: "Wants a quote", yes: "Said yes", later: "Not now", stop: "Asked to stop" };
 export const READY: Record<ReplyKind, string> = {
-  quote: "Thanks {{firstName}}. Could you share the collection and delivery locations and shipment details?",
-  yes: "Thanks {{firstName}}. What logistics needs would you like to discuss?",
+  quote: "Thanks {{firstName}}. Could you share the drawings, dimensions and scope of work?",
+  yes: "Thanks {{firstName}}. What engineering work would you like to discuss?",
   later: "No problem {{firstName}}. I'll check in again then.",
   stop: "Done {{firstName}}, you're off our list.",
 };
@@ -181,11 +181,11 @@ const INCOMING: Record<"customer" | "prospect", [ReplyKind, string][]> = {
     ["quote", "Yes, book it in. Can you give me a price before it comes to you?"],
     ["later", "Budget is done for this year. Try me in January."],
     ["yes", "Hold the slot please, I'll confirm with production."],
-    ["quote", "Good timing. Can you quote on our deliveries?"],
+    ["quote", "Good timing. Can you quote on our fabrication work?"],
   ],
   prospect: [
     ["yes", "Please send some details about your services."],
-    ["quote", "Can someone review our delivery needs this week?"],
+    ["quote", "Can someone review our equipment this week?"],
     ["later", "Not now, we have a contract until March."],
     ["stop", "Not interested, please remove us."],
   ],
@@ -214,16 +214,16 @@ export function score(s: Pick<State, "deals">, cs: Campaign[]) {
 /* ---------------- seed ---------------- */
 const PLACES = ["Vlierbos", "Duikerhoek", "Nagtegaal", "Knoppiekop", "Geelhoutrand", "Wolfkrantz", "Kwartelberg", "Suurvlakte", "Loerieveld", "Ystervark", "Bosduif", "Mielieland"];
 const PEOPLE: Record<Segment, string[]> = {
-  Retail: ["Jaco Pretorius", "Lebo Maseko", "Deon Visser", "Sipho Ndlovu", "Carina Nel", "Thulani Zwane", "Riaan Swart", "Palesa Moeketsi", "Gert Lombard", "Bongani Cele", "Yolandi Roux", "Musa Hadebe"],
+  Mining: ["Jaco Pretorius", "Lebo Maseko", "Deon Visser", "Sipho Ndlovu", "Carina Nel", "Thulani Zwane", "Riaan Swart", "Palesa Moeketsi", "Gert Lombard", "Bongani Cele", "Yolandi Roux", "Musa Hadebe"],
   Manufacturing: ["Priya Singh", "Wayne Jacobs", "Nthabiseng Tau", "Craig Meyer", "Fatima Patel", "Lwazi Dlamini", "Anton Wessels", "Keamo Phiri", "Shaun Peters", "Zodwa Mthembu", "Imraan Khan", "Hester Vorster"],
-  "E-commerce": ["Kobus Steenkamp", "Nandi Buthelezi", "Francois Malan", "Tebogo Kgosi", "Wikus Coetzee", "Sibongile Radebe", "Danie Viljoen", "Refilwe Motaung", "Louis Grobler", "Ayanda Khumalo", "Petro Barnard", "Mpho Letsoalo"],
-  Services: ["Themba Gumede", "Rika Janse", "Oupa Masilela", "Divya Moodley", "Andile Mkhize", "Marius Botes", "Lerato Seabi", "Kevin Reddy", "Noluthando Sibiya", "Hannes Kotze", "Busi Nkabinde", "Jerome Adams"],
+  Engineering: ["Kobus Steenkamp", "Nandi Buthelezi", "Francois Malan", "Tebogo Kgosi", "Wikus Coetzee", "Sibongile Radebe", "Danie Viljoen", "Refilwe Motaung", "Louis Grobler", "Ayanda Khumalo", "Petro Barnard", "Mpho Letsoalo"],
+  Contractors: ["Themba Gumede", "Rika Janse", "Oupa Masilela", "Divya Moodley", "Andile Mkhize", "Marius Botes", "Lerato Seabi", "Kevin Reddy", "Noluthando Sibiya", "Hannes Kotze", "Busi Nkabinde", "Jerome Adams"],
 };
 const KIND: Record<Segment, [string[], string[], string[]]> = {
-  Retail: [["Retail", "Stores", "Home", "Trading"], ["Operations Manager", "Logistics Manager", "Buyer", "Owner"], ["Ogies", "Rustenburg", "Steelpoort", "Carletonville"]],
+  Mining: [["Mining", "Colliery", "Minerals", "Mine"], ["Maintenance Manager", "Plant Engineer", "Buyer", "Operations Manager"], ["Ogies", "Rustenburg", "Steelpoort", "Carletonville"]],
   Manufacturing: [["Paper", "Foods", "Chemicals", "Packaging"], ["Maintenance Lead", "Plant Manager", "Utilities Manager", "Buyer"], ["Springs", "Germiston", "Sasolburg", "Isando"]],
-  "E-commerce": [["Online", "Shop", "Market", "Commerce"], ["Owner", "Fulfilment Manager", "Operations Manager", "Owner"], ["Groblersdal", "Bethal", "Heidelberg", "Delmas"]],
-  Services: [["Group", "Consulting", "Offices", "Services"], ["Office Manager", "Operations Manager", "Facilities Manager", "Director"], ["Vereeniging", "Benoni", "Midrand", "Brakpan"]],
+  Engineering: [["Engineering", "Industrial", "Mechanical", "Works"], ["Project Engineer", "Workshop Manager", "Operations Manager", "Director"], ["Groblersdal", "Bethal", "Heidelberg", "Delmas"]],
+  Contractors: [["Projects", "Construction", "Contractors", "Industrial"], ["Project Manager", "Site Manager", "Buyer", "Director"], ["Vereeniging", "Benoni", "Midrand", "Brakpan"]],
 };
 
 export function seedProspects(): Prospect[] {
@@ -234,7 +234,7 @@ export function seedProspects(): Prospect[] {
       const contact = PEOPLE[segment][i];
       const company = `${pl} ${suffix[i % 4]}`;
       out.push({
-        id: `p${segment.slice(0, 2)}${i}`, contact, role: roles[i % 4], company, segment, town: towns[(i + 1) % 4],
+        id: `p${segment.slice(0, 3)}${i}`, contact, role: roles[i % 4], company, segment, town: towns[(i + 1) % 4],
         email: `${contact.split(" ")[0].toLowerCase()}@${company.toLowerCase().replace(/[^a-z]+/g, "")}.example`, status: "new",
       });
     });
@@ -255,13 +255,10 @@ export function seedOutreach(t0: Date, now: Date, customers: Customer[], deals: 
     deals.filter((d) => d.customerId === id && d.status === "won" && d.closedAt && daysBetween(d.closedAt, iso(t0)) < 110 && daysBetween(d.closedAt, iso(t0)) > 12 && d.source !== "Outreach")[0];
 
   const base: Slim = { customers, prospects, deals, campaigns: [] };
-  const due = buildAudience(base, "due").list.filter((r) => {
-    const p = customers.find((c) => c.id === r.id)?.pumps.find((x) => x.tag === r.pump);
-    return p && daysBetween(iso(t0), dueOf(p)) <= 31;
-  });
+  const due = buildAudience(base, "due").list;
   const campaigns: Campaign[] = [];
 
-  /* 1. running: refurbs due, two of three steps out */
+  /* 1. running: service reviews due */
   const dueReplies: Record<string, ReplyKind> = { c16: "quote", c2: "later", c13: "yes", c7: "quote" };
   campaigns.push({
     id: "k1", name: "Service reviews due", audience: "due", segment: "All", status: "Running", started: day(-9), steps: stepsFor("due"),
@@ -270,15 +267,15 @@ export function seedOutreach(t0: Date, now: Date, customers: Customer[], deals: 
       const early = r.id === "c7";
       return {
         ...r, sent: early ? 1 : 2, lastSent: day(early ? -9 : -5), reply, repliedOn: reply ? day(early ? -8 : r.id === "c13" ? -2 : 0) : undefined, state: reply ? "replied" : "active",
-        dealId: early ? link(deal("International delivery plan")) : undefined,
+        dealId: early ? link(deal("Conveyor support frame design")) : undefined,
       };
     }),
   });
 
   /* 2. running: first contact with mines, part of the list sent */
   campaigns.push({
-    id: "k2", name: "Retail logistics prospects", audience: "prospects", segment: "Retail", status: "Running", started: day(-2), steps: stepsFor("prospects", "Retail"),
-    recipients: of("Retail").map((p, i) => {
+    id: "k2", name: "Mining prospects", audience: "prospects", segment: "Mining", status: "Running", started: day(-2), steps: stepsFor("prospects", "Mining"),
+    recipients: of("Mining").map((p, i) => {
       const sent = i < 8 ? 1 : 0;
       const reply: ReplyKind | undefined = i === 1 ? "yes" : i === 5 ? "stop" : undefined;
       if (sent) p.status = "emailed";
@@ -296,17 +293,17 @@ export function seedOutreach(t0: Date, now: Date, customers: Customer[], deals: 
       const q = deals.filter((d) => d.customerId === id && d.status === "lost")[0];
       return {
         id, quote: q?.id, sent: reply ? 1 : 2, lastSent: day(reply ? -27 : -21), reply, repliedOn: reply ? day(-26 + i) : undefined, state: reply ? "replied" : "done",
-        dealId: id === "c3" ? link(deal("E-commerce fulfilment")) : id === "c11" ? link(deal("E-commerce fulfilment plan")) : undefined,
+        dealId: id === "c3" ? link(deal("Hopper fabrication")) : id === "c11" ? link(deal("Chute fabrication")) : undefined,
       };
     }),
   });
 
-  /* 4. finished: water works, two of them are customers now */
+  /* 4. finished: contractors, two of them are customers now */
   campaigns.push({
-    id: "k4", name: "Business services prospects", audience: "prospects", segment: "Services", status: "Finished", started: day(-41), steps: stepsFor("prospects", "Services"),
+    id: "k4", name: "Contractor prospects", audience: "prospects", segment: "Contractors", status: "Finished", started: day(-41), steps: stepsFor("prospects", "Contractors"),
     recipients: [
-      ...["c15", "c16"].map((id): Recipient => ({ id, sent: 1, lastSent: day(-41), reply: "quote", repliedOn: day(id === "c15" ? -40 : -37), state: "replied", dealId: link(deal(id === "c15" ? "Mailroom service assessment" : "Cross-border courier")) })),
-      ...of("Services").map((p, i): Recipient => {
+      ...["c15", "c16"].map((id): Recipient => ({ id, sent: 1, lastSent: day(-41), reply: "quote", repliedOn: day(id === "c15" ? -40 : -37), state: "replied", dealId: link(deal(id === "c15" ? "Structural steel assessment" : "Pipework installation")) })),
+      ...of("Contractors").map((p, i): Recipient => {
         const reply: ReplyKind | undefined = i === 3 ? "later" : i === 7 ? "stop" : undefined;
         p.status = reply === "stop" ? "out" : "emailed";
         if (reply === "stop") p.outSince = day(-39);
@@ -330,25 +327,25 @@ export function seedOutreach(t0: Date, now: Date, customers: Customer[], deals: 
 
   /* 6. draft */
   campaigns.push({
-    id: "k6", name: "E-commerce prospects", audience: "prospects", segment: "E-commerce", status: "Draft", steps: stepsFor("prospects", "E-commerce"),
-    recipients: of("E-commerce").map((p) => ({ id: p.id, sent: 0, state: "active" as const })),
+    id: "k6", name: "Engineering prospects", audience: "prospects", segment: "Engineering", status: "Draft", steps: stepsFor("prospects", "Engineering"),
+    recipients: of("Engineering").map((p) => ({ id: p.id, sent: 0, state: "active" as const })),
   });
 
   const min = (m: number) => now.getTime() - m * 60000;
-  const mining = of("Retail");
+  const mining = of("Mining");
   const replies: MailReply[] = [
-    { id: "r1", campaignId: "k1", contactId: "c16", kind: "quote", text: "Yes please, can we arrange a review of our courier service?", at: min(3), done: false, title: "International courier review", pumpType: "Freight", estimate: 94500 },
-    { id: "r2", campaignId: "k2", contactId: mining[1].id, kind: "yes", text: "Please send information on your courier services.", at: min(21), done: false, title: "Courier service assessment", pumpType: "International", estimate: 148000 },
-    { id: "r3", campaignId: "k1", contactId: "c2", kind: "later", text: "We will review our delivery contract in January. Please ask again then.", at: min(96), done: false, title: "Delivery contract review", pumpType: "International", estimate: 142000 },
-    { id: "r4", campaignId: "k2", contactId: mining[5].id, kind: "stop", text: "Not for us, please remove.", at: min(240), done: false, title: "", pumpType: "International", estimate: 0 },
-    { id: "r5", campaignId: "k1", contactId: "c7", kind: "quote", text: "Please send the updated delivery quote.", at: min(11500), done: true, title: "International delivery plan", pumpType: "Domestic", estimate: 0 },
-    { id: "r6", campaignId: "k1", contactId: "c13", kind: "yes", text: "Hold it for the second week of December.", at: min(2900), done: true, title: "Mailroom service review", pumpType: "Domestic", estimate: 0 },
+    { id: "r1", campaignId: "k1", contactId: "c16", kind: "quote", text: "Yes please, can we arrange a review of our pipework?", at: min(3), done: false, title: "Pipework inspection", pumpType: "Fabrication", estimate: 94500 },
+    { id: "r2", campaignId: "k2", contactId: mining[1].id, kind: "yes", text: "Please send information on your fabrication services.", at: min(21), done: false, title: "Equipment fabrication assessment", pumpType: "Fabrication", estimate: 148000 },
+    { id: "r3", campaignId: "k1", contactId: "c2", kind: "later", text: "We will review the conveyor repair in January. Please ask again then.", at: min(96), done: false, title: "Conveyor repair review", pumpType: "Repairs", estimate: 142000 },
+    { id: "r4", campaignId: "k2", contactId: mining[5].id, kind: "stop", text: "Not for us, please remove.", at: min(240), done: false, title: "", pumpType: "Machines", estimate: 0 },
+    { id: "r5", campaignId: "k1", contactId: "c7", kind: "quote", text: "Please send the updated frame quote.", at: min(11500), done: true, title: "Conveyor support frame design", pumpType: "Fabrication", estimate: 0 },
+    { id: "r6", campaignId: "k1", contactId: "c13", kind: "yes", text: "Hold it for the second week of December.", at: min(2900), done: true, title: "Equipment review", pumpType: "Machines", estimate: 0 },
   ];
   return { prospects, campaigns, replies };
 }
 
-const PUMP_BY_SEG: Record<Segment, MailReply["pumpType"]> = { Retail: "International", Manufacturing: "Domestic", "E-commerce": "Domestic", Services: "Freight" };
-const EST: Record<MailReply["pumpType"], number> = { Domestic: 118000, International: 142000, Freight: 86000 };
+const PUMP_BY_SEG: Record<Segment, MailReply["pumpType"]> = { Mining: "Machines", Manufacturing: "Repairs", Engineering: "Fabrication", Contractors: "Fabrication" };
+const EST: Record<MailReply["pumpType"], number> = { Machines: 118000, Fabrication: 142000, Repairs: 86000 };
 
 /** Demo only. Sends whatever is next in the campaign and lets a reply or two arrive. */
 export function playDay(s: State, id: string): { state: State; sent: number; replies: number; finished: boolean } {
@@ -380,7 +377,7 @@ export function playDay(s: State, id: string): { state: State; sent: number; rep
     const pumpType = pump?.type ?? PUMP_BY_SEG[who.segment];
     fresh.push({
       id: "r" + Math.random().toString(36).slice(2, 8), campaignId: id, contactId: r.id, kind, text, at: Date.now(), done: false,
-      title: pump ? `Service review: ${pump.tag}` : `${pumpType} logistics enquiry`, pumpType, estimate: EST[pumpType],
+      title: pump ? `Service review: ${pump.tag}` : `${pumpType} enquiry`, pumpType, estimate: EST[pumpType],
     });
   }
   recipients = recipients.map((r) => {

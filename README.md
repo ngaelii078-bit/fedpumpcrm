@@ -1,6 +1,6 @@
-# LexBridge Group CRM demo
+# Rebotech Engineering CRM demo
 
-Demo CRM for LexBridge Group, an independent logistics brokerage. Everything in it is sample data.
+Demo CRM for Rebotech Engineering, an engineering and fabrication workshop in Kempton Park. Everything in it is sample data.
 
 ## Show it
 Double click `Start demo.bat`. It opens in the browser.

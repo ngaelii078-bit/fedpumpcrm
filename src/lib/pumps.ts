@@ -239,9 +239,9 @@ const submersible: PartDef[] = [
 ];
 
 export const PUMPS: Record<PumpType, PartDef[]> = {
-  Domestic: multistage,
-  International: slurry,
-  Freight: submersible,
+  Machines: multistage,
+  Fabrication: slurry,
+  Repairs: submersible,
 };
 
 const KEY: Record<string, Condition> = { o: "reuse", r: "recondition", x: "replace" };

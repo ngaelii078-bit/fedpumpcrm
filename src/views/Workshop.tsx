@@ -31,12 +31,12 @@ export default function Workshop() {
 
   return (
     <div ref={root}>
-      <PageHead a="Service" b="coordination" kpis={[
-        { icon: <ClipboardList size={18} />, value: live.length, format: int, label: "Active engagements" },
+      <PageHead a="Workshop" b="jobs" kpis={[
+        { icon: <ClipboardList size={18} />, value: live.length, format: int, label: "Active jobs" },
         { icon: <Clock3 size={18} />, value: live.filter((j) => daysBetween(t, j.due) <= 7).length, format: int, label: "Due in the next 7 days" },
-        { icon: <Siren size={18} />, value: live.filter((j) => j.urgency === "breakdown").length, format: int, label: "Priority engagements" },
+        { icon: <Siren size={18} />, value: live.filter((j) => j.urgency === "breakdown").length, format: int, label: "Priority jobs" },
       ]} />
-      {!job || !c ? <Panel title="Engagements"><Empty>No engagements yet. Mark a pipeline opportunity won to start coordinating.</Empty></Panel> : (
+      {!job || !c ? <Panel title="Workshop jobs"><Empty>No jobs yet. Mark a pipeline opportunity won to start a workshop job.</Empty></Panel> : (
         <div className="floor">
           <div className="joblist" data-enter data-lenis-prevent>
             {jobs.map((j) => {
@@ -61,15 +61,15 @@ export default function Workshop() {
                 <button className="small muted" style={{ textDecoration: "underline", textUnderlineOffset: 3 }} onClick={() => setOpen({ k: "customer", id: c.id })}>{c.company}, {c.town}</button>
               </div>
               <div style={{ display: "flex", gap: 9, flexWrap: "wrap" }}>
-                <button className="btn" onClick={() => setOpen({ k: "message", customerId: c.id, channel: "WhatsApp", text: `Good day ${c.contact.split(" ")[0]}, here is an update on ${job.title}: ${job.done} of 6 coordination stages are complete${next ? `, with ${next.toLowerCase()} next` : ""}. ${job.done === 6 ? "The engagement is complete." : `The planned date is ${fmtDay(job.due)}.`} LexBridge` })}><MessageCircle size={16} /> Draft update</button>
+                <button className="btn" onClick={() => setOpen({ k: "message", customerId: c.id, channel: "WhatsApp", text: `Good day ${c.contact.split(" ")[0]}, here is an update on ${job.title}: ${job.done} of 6 workshop stages are complete${next ? `, with ${next.toLowerCase()} next` : ""}. ${job.done === 6 ? "The job is complete." : `The planned date is ${fmtDay(job.due)}.`} Rebotech` })}><MessageCircle size={16} /> Draft update</button>
                 <button className="btn gold" disabled={job.done >= 6 || !!waiting} onClick={() => { dispatch({ t: "advance", id: job.id }); toast(job.done === 5 ? `${job.id} completed in the demo.` : `${next} recorded on ${job.id}.`); }}>
                   {job.done >= 6 ? <><Check size={16} /> Completed</> : waiting ? "Waiting for order" : <><Check size={16} /> Complete {next?.toLowerCase()}</>}
                 </button>
               </div>
             </div>
             <div style={{ background: "var(--well)", borderRadius: 18, padding: 20, marginBottom: 20 }}>
-              <p className="small muted" style={{ marginBottom: 8 }}>COORDINATION PROGRESS</p>
-              <h3 style={{ fontSize: 20, fontWeight: 600 }}>{job.done === 6 ? "Engagement completed" : `${next} is next`}</h3>
+              <p className="small muted" style={{ marginBottom: 8 }}>WORKSHOP PROGRESS</p>
+              <h3 style={{ fontSize: 20, fontWeight: 600 }}>{job.done === 6 ? "Job completed" : `${next} is next`}</h3>
               <p className="muted small" style={{ marginTop: 8 }}>Track each step from the initial requirements to the agreed handover. This demo records progress locally.</p>
               <div className="meter" style={{ marginTop: 18 }}><i style={{ width: `${job.done / 6 * 100}%` }} /></div>
               <div className="steps" style={{ marginTop: 18 }}>
@@ -78,11 +78,11 @@ export default function Workshop() {
             </div>
             <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(180px, 1fr))", gap: 12 }}>
               <div style={{ display: "grid", gap: 5, background: "var(--well)", borderRadius: 12, padding: 14 }}><span className="small muted">Service category</span><b>{job.pumpType}</b></div>
-              <div style={{ display: "grid", gap: 5, background: "var(--well)", borderRadius: 12, padding: 14 }}><span className="small muted">Coordination</span><b>{job.machine}</b></div>
+              <div style={{ display: "grid", gap: 5, background: "var(--well)", borderRadius: 12, padding: 14 }}><span className="small muted">Work area</span><b>{job.machine}</b></div>
               <div style={{ display: "grid", gap: 5, background: "var(--well)", borderRadius: 12, padding: 14 }}><span className="small muted">Planned date</span><b>{fmtDay(job.due)}</b></div>
               <div style={{ display: "grid", gap: 5, background: "var(--well)", borderRadius: 12, padding: 14 }}><span className="small muted">Opportunity value, excl. VAT</span><b>{deal ? zar(deal.value) : "—"}</b></div>
             </div>
-            {waiting && <p className="small muted" style={{ marginTop: 16 }}>This engagement is awaiting the customer order before coordination continues.</p>}
+            {waiting && <p className="small muted" style={{ marginTop: 16 }}>This job is awaiting the customer order before workshop work continues.</p>}
           </div>
         </div>
       )}

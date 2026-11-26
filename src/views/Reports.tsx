@@ -36,7 +36,7 @@ export default function Reports() {
     return { won, bySeg, segTotals, src, count, rate, cycle, byPump, top, total: sum(won), buyers: new Set(won.map((x) => x.customerId)).size };
   }, [s.deals, n, customer]);
 
-  const csv = () => downloadCsv(`lexbridge-revenue-by-industry-${today()}.csv`, [["Month", ...SEGMENTS, "Total"], ...d.bySeg.map((m) => [m.label, ...SEGMENTS.map((g) => m.values[g] as number), SEGMENTS.reduce((a, g) => a + (m.values[g] as number), 0)])]);
+  const csv = () => downloadCsv(`rebotech-revenue-by-industry-${today()}.csv`, [["Month", ...SEGMENTS, "Total"], ...d.bySeg.map((m) => [m.label, ...SEGMENTS.map((g) => m.values[g] as number), SEGMENTS.reduce((a, g) => a + (m.values[g] as number), 0)])]);
 
   return (
     <div ref={root}>

@@ -21,7 +21,7 @@ const NAV = [
   { href: "/customers/", label: "Customers", icon: Users },
   { href: "/outreach/", label: "Outreach", icon: Send },
   { href: "/schedule/", label: "Schedule", icon: CalendarDays },
-  { href: "/workshop/", label: "Operations", icon: Factory },
+  { href: "/workshop/", label: "Workshop", icon: Factory },
   { href: "/finance/", label: "Finance", icon: Banknote },
   { href: "/reports/", label: "Reports", icon: ChartColumn },
 ];
@@ -240,18 +240,18 @@ export function Shell({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     try {
-      setNight(localStorage.getItem("lexbridge-theme") === "night");
+      setNight(localStorage.getItem("rebotech-theme") === "night");
     } catch {}
   }, []);
   useEffect(() => {
     document.documentElement.dataset.shift = night ? "night" : "day";
     try {
-      localStorage.setItem("lexbridge-theme", night ? "night" : "day");
+      localStorage.setItem("rebotech-theme", night ? "night" : "day");
     } catch {}
   }, [night]);
 
   const exportAll = () =>
-    downloadCsv(`lexbridge-pipeline-${today()}.csv`, [
+    downloadCsv(`rebotech-pipeline-${today()}.csv`, [
       ["Ref", "Title", "Customer", "Stage", "Value excl VAT", "Closes"],
       ...s.deals.filter(isOpen).map((d) => [d.id, d.title, s.customers.find((c) => c.id === d.customerId)?.company ?? "", stageOf(d.status)!.name, d.value, fmtDay(d.closes)]),
     ]);
@@ -273,8 +273,6 @@ export function Shell({ children }: { children: ReactNode }) {
   return (
     <>
       <div className="backdrop" aria-hidden="true">
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img src="/brand/lexbridge-knot.webp" alt="" width={1440} height={352} />
         <div className="night" />
       </div>
       <div className="grain" aria-hidden="true" />
@@ -291,9 +289,8 @@ export function Shell({ children }: { children: ReactNode }) {
         <div className="shell">
           <div className={"topbar" + (stuck ? " stuck" : "")}>
             <div className="brand">
-              <Link href="/" onClick={(e) => go(e, "/")} aria-label="LexBridge Group, go to overview">
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img src="/brand/lexbridge-logo.png" alt="LexBridge Group" width={380} height={150} />
+              <Link href="/" onClick={(e) => go(e, "/")} aria-label="Rebotech Engineering, go to overview">
+                <span className="wordmark"><strong>Rebotech</strong><small>Engineering CC</small></span>
               </Link>
               <span className="demo-chip">Demo data</span>
             </div>

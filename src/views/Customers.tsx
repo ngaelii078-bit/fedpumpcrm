@@ -47,7 +47,7 @@ export default function Customers() {
   const dueSoon = s.customers.flatMap((c) => c.pumps).filter((p) => daysBetween(today(), nextRefurb(p)) <= 30).length;
   const pumps = s.customers.reduce((a, c) => a + c.pumps.length, 0);
 
-  const csv = () => downloadCsv(`lexbridge-customers-${today()}.csv`, [
+  const csv = () => downloadCsv(`rebotech-customers-${today()}.csv`, [
     ["Company", "Contact", "Role", "Industry", "Town", "Phone", "Email", "Open value", "Next review"],
     ...rows.map(({ c, open, next }) => [c.company, c.contact, c.role, c.segment, c.town, c.phone, c.email, open, next ? `${next.p.tag} ${fmtDay(next.d)}` : ""]),
   ]);

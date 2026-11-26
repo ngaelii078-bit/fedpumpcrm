@@ -12,7 +12,7 @@ export const TEAM: Member[] = [
   { id: "NP", name: "Naledi", role: "Front office", tone: "#F4D9B4" },
   { id: "DV", name: "Dirk", role: "Solutions consultant", tone: "#C4DDF2" },
   { id: "TM", name: "Thabo", role: "Operations coordinator", tone: "#F3C7B5" },
-  { id: "RG", name: "Ravi", role: "Provider coordinator", tone: "#CBE6D5" },
+  { id: "RG", name: "Ravi", role: "Workshop coordinator", tone: "#CBE6D5" },
   { id: "LJ", name: "Lerato", role: "Accounts", tone: "#E3D2EC" },
 ];
 export const ME = TEAM[0];
@@ -26,28 +26,28 @@ export const STAGES: { id: Stage; name: string; prob: number; dot: string }[] = 
 export const stageOf = (id: string) => STAGES.find((s) => s.id === id);
 export const probOf = (s: DealStatus) => (s === "won" ? 1 : s === "lost" ? 0 : stageOf(s)!.prob);
 
-export const JOB_STAGES = ["Enquiry received", "Assess needs", "Select provider", "Coordinate", "Track progress", "Complete & review"];
+export const JOB_STAGES = ["Enquiry received", "Assess requirements", "Plan & quote", "Fabricate or repair", "Inspect & test", "Complete & hand over"];
 export const MONTH_TARGET = 900000;
-export const SEGMENTS: Segment[] = ["Retail", "Manufacturing", "E-commerce", "Services"];
+export const SEGMENTS: Segment[] = ["Mining", "Manufacturing", "Engineering", "Contractors"];
 export const SOURCES: Source[] = ["Repeat", "Referral", "WhatsApp", "Website", "Phone", "Outreach"];
 export const SERVICES: Service[] = [
-  "Nationwide courier", "International courier", "Air sea & customs", "Transport & warehousing", "E-commerce logistics", "Mailroom management",
+  "Machine builds", "Platework & fabrication", "Pipework & fittings", "Repairs & refurbishment", "Structural steelwork", "Engineering consulting", "Assessment",
 ];
-export const PUMP_TYPES: PumpType[] = ["Domestic", "International", "Freight"];
+export const PUMP_TYPES: PumpType[] = ["Machines", "Fabrication", "Repairs"];
 export const EVENT_KINDS: EventKind[] = ["Strategy call", "Partner meeting", "Assessment", "Service review", "Follow-up"];
 
 export const SEG_COLOR: Record<Segment, string> = {
-  Retail: "#BF8632", Manufacturing: "#4A90D9", "E-commerce": "#E0603A", Services: "#2FA37A",
+  Mining: "#BF8632", Manufacturing: "#4A90D9", "Engineering": "#E0603A", Contractors: "#2FA37A",
 };
 export const SRC_COLOR: Record<Source, string> = {
   Repeat: "#BF8632", Referral: "#4A90D9", WhatsApp: "#E0603A", Website: "#2FA37A", Phone: "#B070C4", Outreach: "#8F9A3A",
 };
 
 export const MACHINES = [
-  { name: "Domestic courier", hours: 46, cap: 56 },
-  { name: "International courier", hours: 51, cap: 56 },
-  { name: "Freight & customs", hours: 33, cap: 56 },
-  { name: "Warehousing", hours: 21, cap: 56 },
+  { name: "Machine builds", hours: 46, cap: 56 },
+  { name: "Platework & fabrication", hours: 51, cap: 56 },
+  { name: "Repairs", hours: 33, cap: 56 },
+  { name: "Fabrication", hours: 21, cap: 56 },
 ];
 
 function rng(seed: number) {
@@ -63,65 +63,65 @@ function rng(seed: number) {
 
 type C = [string, string, string, string, Segment, string, number, number, number, boolean, Source, [string, PumpType, string, number, number][]];
 const CUSTOMERS: C[] = [
-  ["c1", "Pieter Steyn", "Operations Manager", "Ironwood Retail", "Retail", "Johannesburg", 2, 88, 41, true, "Repeat", [["LBR-001", "Domestic", "Nationwide store deliveries", 5, 6]]],
-  ["c2", "Kagiso Molefe", "Supply Chain Manager", "Sable Ridge Stores", "Retail", "Pretoria", 0, 94, 63, true, "Repeat", [["LBR-002", "Domestic", "Store replenishment", 4, 6]]],
-  ["c3", "Anele Dube", "Logistics Manager", "Thornveld Trading", "Retail", "Cape Town", 5, 71, 22, false, "Referral", [["LBR-003", "International", "Import deliveries", 5, 6]]],
-  ["c4", "Willem Fourie", "Buyer", "Amber Home", "Retail", "Durban", 1, 91, 55, true, "Repeat", [["LBR-004", "Freight", "Inbound freight", 5, 6]]],
-  ["c5", "Nomsa Khoza", "Operations Lead", "Kiaat Supplies", "Retail", "Midrand", 8, 64, 14, false, "Phone", [["LBR-005", "Domestic", "Branch deliveries", 5, 6]]],
-  ["c6", "Sanjay Pillay", "Supply Chain Manager", "Drakens Paper", "Manufacturing", "Springs", 3, 82, 37, false, "Repeat", [["LBR-006", "Freight", "Pallet distribution", 5, 6]]],
-  ["c7", "Ruth Adams", "Operations Manager", "Copperleaf Products", "Manufacturing", "Sasolburg", 1, 86, 48, true, "Referral", [["LBR-007", "International", "International shipments", 5, 6]]],
-  ["c8", "Themba Nkosi", "Logistics Lead", "Delmora Foods", "Manufacturing", "Boksburg", 6, 68, 19, false, "Website", [["LBR-008", "Domestic", "Regional distribution", 5, 6]]],
-  ["c9", "Ilse Botha", "Plant Manager", "Marulane Beverages", "Manufacturing", "Isando", 11, 59, 11, false, "Website", [["LBR-009", "Freight", "Warehousing and transport", 5, 6]]],
-  ["c10", "Hennie Marais", "Owner", "Bergvallei Online", "E-commerce", "Groblersdal", 4, 77, 16, false, "WhatsApp", [["LBR-010", "Domestic", "Online order fulfilment", 5, 6]]],
-  ["c11", "Lindiwe Zulu", "Fulfilment Manager", "Suikerbos Shop", "E-commerce", "Bethal", 9, 66, 12, false, "WhatsApp", [["LBR-011", "Domestic", "Customer deliveries", 5, 6]]],
-  ["c12", "Johan Kruger", "Owner", "Kareebos Market", "E-commerce", "Heidelberg", 13, 52, 7, false, "Phone", [["LBR-012", "International", "Cross-border orders", 5, 6]]],
-  ["c13", "Mandla Sithole", "Facilities Manager", "Vaalkrans Offices", "Services", "Vereeniging", 1, 90, 52, true, "Repeat", [["LBR-013", "Domestic", "Mailroom management", 5, 6]]],
-  ["c14", "Farah Ismail", "Office Manager", "Silverstream Group", "Services", "Benoni", 0, 79, 28, false, "Phone", [["LBR-014", "Domestic", "Document deliveries", 5, 6]]],
-  ["c15", "Grant Naidoo", "Facilities Manager", "Highveld Services", "Services", "Midrand", 7, 61, 9, false, "Website", [["LBR-015", "Freight", "Storage and transport", 5, 6]]],
-  ["c16", "Zanele Mabaso", "Operations Manager", "Mopane Consulting", "Services", "Polokwane", 10, 70, 24, false, "Referral", [["LBR-016", "International", "International courier", 5, 6]]],
+  ["c1", "Pieter Steyn", "Operations Manager", "Ironwood Mining", "Mining", "Johannesburg", 2, 88, 41, true, "Repeat", [["RB-001", "Machines", "Conveyor drive assembly", 5, 6]]],
+  ["c2", "Kagiso Molefe", "Engineering Manager", "Sable Ridge Mine", "Mining", "Pretoria", 0, 94, 63, true, "Repeat", [["RB-002", "Repairs", "Conveyor refurbishment", 4, 6]]],
+  ["c3", "Anele Dube", "Plant Engineer", "Thornveld Minerals", "Mining", "Cape Town", 5, 71, 22, false, "Referral", [["RB-003", "Fabrication", "Feed hopper", 5, 6]]],
+  ["c4", "Willem Fourie", "Buyer", "Amber Ore", "Mining", "Durban", 1, 91, 55, true, "Repeat", [["RB-004", "Fabrication", "Transfer chute", 5, 6]]],
+  ["c5", "Nomsa Khoza", "Operations Lead", "Kiaat Resources", "Mining", "Midrand", 8, 64, 14, false, "Phone", [["RB-005", "Repairs", "Plant equipment repair", 5, 6]]],
+  ["c6", "Sanjay Pillay", "Engineering Manager", "Drakens Paper", "Manufacturing", "Springs", 3, 82, 37, false, "Repeat", [["RB-006", "Machines", "Custom machine frame", 5, 6]]],
+  ["c7", "Ruth Adams", "Operations Manager", "Copperleaf Products", "Manufacturing", "Sasolburg", 1, 86, 48, true, "Referral", [["RB-007", "Fabrication", "Conveyor support frame", 5, 6]]],
+  ["c8", "Themba Nkosi", "Engineering Lead", "Delmora Foods", "Manufacturing", "Boksburg", 6, 68, 19, false, "Website", [["RB-008", "Fabrication", "Process tank", 5, 6]]],
+  ["c9", "Ilse Botha", "Plant Manager", "Marulane Beverages", "Manufacturing", "Isando", 11, 59, 11, false, "Website", [["RB-009", "Repairs", "Plant pipework", 5, 6]]],
+  ["c10", "Hennie Marais", "Owner", "Bergvallei Engineering", "Engineering", "Groblersdal", 4, 77, 16, false, "WhatsApp", [["RB-010", "Machines", "Machine frame", 5, 6]]],
+  ["c11", "Lindiwe Zulu", "Project Manager", "Suikerbos Engineering", "Engineering", "Bethal", 9, 66, 12, false, "WhatsApp", [["RB-011", "Fabrication", "Transfer chute", 5, 6]]],
+  ["c12", "Johan Kruger", "Owner", "Kareebos Engineering", "Engineering", "Heidelberg", 13, 52, 7, false, "Phone", [["RB-012", "Machines", "Kiln assembly", 5, 6]]],
+  ["c13", "Mandla Sithole", "Project Manager", "Vaalkrans Contractors", "Contractors", "Vereeniging", 1, 90, 52, true, "Repeat", [["RB-013", "Fabrication", "Structural steelwork", 5, 6]]],
+  ["c14", "Farah Ismail", "Site Manager", "Silverstream Projects", "Contractors", "Benoni", 0, 79, 28, false, "Phone", [["RB-014", "Repairs", "Equipment repair", 5, 6]]],
+  ["c15", "Grant Naidoo", "Project Manager", "Highveld Contractors", "Contractors", "Midrand", 7, 61, 9, false, "Website", [["RB-015", "Fabrication", "Structural steelwork", 5, 6]]],
+  ["c16", "Zanele Mabaso", "Operations Manager", "Mopane Projects", "Contractors", "Polokwane", 10, 70, 24, false, "Referral", [["RB-016", "Fabrication", "Pipework and fittings", 5, 6]]],
 ];
 
 type D = [string, string, number, Stage, number, string[], Service, PumpType, Urgency, Source];
 const OPEN: D[] = [
- ["Nationwide parcel network", "c1", 142000, "enquiry", 9, ["DV", "TM"], "Nationwide courier", "Domestic", "planned", "Phone"],
- ["Store replenishment programme", "c2", 187300, "enquiry", 26, ["DV", "NP"], "Nationwide courier", "Domestic", "planned", "Repeat"],
- ["International shipping review", "c3", 68400, "enquiry", 18, ["DV"], "International courier", "International", "planned", "Referral"],
- ["Freight and warehousing", "c6", 54200, "enquiry", 22, ["RG", "DV"], "Transport & warehousing", "Freight", "planned", "Repeat"],
- ["Mailroom service assessment", "c15", 96500, "enquiry", 31, ["NP"], "Mailroom management", "Domestic", "planned", "Website"],
- ["Online order deliveries", "c10", 38600, "enquiry", 12, ["NP", "TM"], "E-commerce logistics", "Domestic", "planned", "WhatsApp"],
- ["Inbound freight assessment", "c4", 412000, "inspect", 16, ["TM", "DV"], "Air sea & customs", "Freight", "planned", "Repeat"],
- ["Domestic courier review", "c2", 236500, "inspect", 11, ["TM", "DV", "RG"], "Nationwide courier", "Domestic", "planned", "Repeat"],
- ["Urgent document shipment", "c14", 58900, "inspect", 3, ["TM"], "Nationwide courier", "Domestic", "breakdown", "Phone"],
- ["International delivery plan", "c7", 318400, "inspect", 24, ["DV", "TM"], "International courier", "International", "planned", "Referral"],
- ["Air freight and customs", "c13", 286000, "quoted", 15, ["DV", "TM"], "Air sea & customs", "Freight", "planned", "Repeat"],
- ["Cross-border courier", "c16", 205800, "quoted", 27, ["DV"], "International courier", "International", "planned", "Referral"],
- ["E-commerce fulfilment", "c3", 174600, "quoted", 10, ["DV", "RG"], "E-commerce logistics", "Domestic", "planned", "Referral"],
- ["Mailroom coordination", "c13", 264300, "po", 5, ["DV", "TM"], "Mailroom management", "Domestic", "planned", "Repeat"],
- ["Store delivery network", "c2", 221800, "po", 7, ["TM", "DV", "RG"], "Nationwide courier", "Domestic", "planned", "Repeat"],
- ["Warehousing programme", "c5", 148700, "po", 10, ["DV", "NP"], "Transport & warehousing", "Freight", "planned", "Phone"],
+ ["Conveyor drive assembly", "c1", 142000, "enquiry", 9, ["DV", "TM"], "Machine builds", "Machines", "planned", "Phone"],
+ ["Kiln support frame", "c2", 187300, "enquiry", 26, ["DV", "NP"], "Structural steelwork", "Fabrication", "planned", "Repeat"],
+ ["Hopper design review", "c3", 68400, "enquiry", 18, ["DV"], "Engineering consulting", "Fabrication", "planned", "Referral"],
+ ["Custom machine frame", "c6", 54200, "enquiry", 22, ["RG", "DV"], "Machine builds", "Machines", "planned", "Repeat"],
+ ["Structural steel assessment", "c15", 96500, "enquiry", 31, ["NP"], "Assessment", "Fabrication", "planned", "Website"],
+ ["Machine frame fabrication", "c10", 38600, "enquiry", 12, ["NP", "TM"], "Machine builds", "Machines", "planned", "WhatsApp"],
+ ["Transfer chute assessment", "c4", 412000, "inspect", 16, ["TM", "DV"], "Platework & fabrication", "Fabrication", "planned", "Repeat"],
+ ["Conveyor refurbishment review", "c2", 236500, "inspect", 11, ["TM", "DV", "RG"], "Repairs & refurbishment", "Repairs", "planned", "Repeat"],
+ ["Urgent equipment repair", "c14", 58900, "inspect", 3, ["TM"], "Repairs & refurbishment", "Repairs", "breakdown", "Phone"],
+ ["Conveyor support frame design", "c7", 318400, "inspect", 24, ["DV", "TM"], "Engineering consulting", "Fabrication", "planned", "Referral"],
+ ["Structural steel installation", "c13", 286000, "quoted", 15, ["DV", "TM"], "Structural steelwork", "Fabrication", "planned", "Repeat"],
+ ["Pipework installation", "c16", 205800, "quoted", 27, ["DV"], "Pipework & fittings", "Fabrication", "planned", "Referral"],
+ ["Hopper fabrication", "c3", 174600, "quoted", 10, ["DV", "RG"], "Platework & fabrication", "Fabrication", "planned", "Referral"],
+ ["Site steelwork", "c13", 264300, "po", 5, ["DV", "TM"], "Structural steelwork", "Fabrication", "planned", "Repeat"],
+ ["Conveyor frame build", "c2", 221800, "po", 7, ["TM", "DV", "RG"], "Machine builds", "Machines", "planned", "Repeat"],
+ ["Plant repair programme", "c5", 148700, "po", 10, ["DV", "NP"], "Repairs & refurbishment", "Repairs", "planned", "Phone"],
 ];
 
 /* This month's won opportunities and active engagements. */
 type W = [string, string, number, number, string[], Service, PumpType, Urgency, Source, number, number, string, string, string];
 const RECENT: W[] = [
- ["Regional distribution", "c6", 198400, 12, ["TM", "DV"], "Nationwide courier", "Domestic", "planned", "Repeat", 3, 7, "Domestic courier", "workshop", "orrrrrroro"],
- ["International courier rollout", "c2", 214600, 15, ["TM", "RG"], "International courier", "International", "planned", "Repeat", 4, 3, "International courier", "casing", "rxxxxorror"],
- ["Urgent document delivery", "c14", 96800, 4, ["TM"], "Nationwide courier", "Domestic", "breakdown", "Phone", 3, 1, "Domestic courier", "casing", "oxrrxoxoror"],
- ["Warehousing coordination", "c7", 74500, 18, ["RG", "DV"], "Transport & warehousing", "Freight", "planned", "Referral", 5, 0, "Warehousing", "machining", "orxooororr"],
- ["E-commerce fulfilment plan", "c11", 63700, 10, ["TM", "NP"], "E-commerce logistics", "Domestic", "planned", "WhatsApp", 4, 5, "Domestic courier", "workshop", "oroorxoxroo"],
+ ["Machine frame build", "c6", 198400, 12, ["TM", "DV"], "Machine builds", "Machines", "planned", "Repeat", 3, 7, "Machine builds", "workshop", "orrrrrroro"],
+ ["Conveyor refurbishment", "c2", 214600, 15, ["TM", "RG"], "Repairs & refurbishment", "Repairs", "planned", "Repeat", 4, 3, "Repairs", "casing", "rxxxxorror"],
+ ["Urgent site equipment repair", "c14", 96800, 4, ["TM"], "Repairs & refurbishment", "Repairs", "breakdown", "Phone", 3, 1, "Repairs", "casing", "oxrrxoxoror"],
+ ["Conveyor support fabrication", "c7", 74500, 18, ["RG", "DV"], "Structural steelwork", "Fabrication", "planned", "Referral", 5, 0, "Fabrication", "machining", "orxooororr"],
+ ["Chute fabrication", "c11", 63700, 10, ["TM", "NP"], "Platework & fabrication", "Fabrication", "planned", "WhatsApp", 4, 5, "Fabrication", "workshop", "oroorxoxroo"],
 ];
 
 /* last number is the typical size of the job */
 const PAST_TITLES: [string, Service, PumpType, number][] = [
- ["Nationwide delivery programme", "Nationwide courier", "Domestic", 2.6],
- ["International courier service", "International courier", "International", 1.9],
- ["Air freight and customs", "Air sea & customs", "Freight", 1.1],
- ["Transport and storage", "Transport & warehousing", "Freight", 0.8],
- ["E-commerce delivery plan", "E-commerce logistics", "Domestic", 0.4],
- ["Mailroom management", "Mailroom management", "Domestic", 1],
- ["Cross-border delivery plan", "International courier", "International", 0.5],
+ ["Conveyor machine build", "Machine builds", "Machines", 2.6],
+ ["Kiln frame build", "Machine builds", "Machines", 1.9],
+ ["Feed hopper build", "Platework & fabrication", "Fabrication", 1.1],
+ ["Pipework and fittings", "Pipework & fittings", "Fabrication", 0.8],
+ ["Equipment refurbishment", "Repairs & refurbishment", "Repairs", 0.4],
+ ["Structural steelwork", "Structural steelwork", "Fabrication", 1],
+ ["Mechanical assessment", "Engineering consulting", "Repairs", 0.5],
 ];
-const LOST_WHY = ["Existing provider", "Price", "Project postponed", "Lead time", "No reply"];
+const LOST_WHY = ["Existing supplier", "Price", "Project postponed", "Lead time", "No reply"];
 
 // oldest first, 11 full months before this one
 const MONTHLY = [684000, 742000, 655000, 812000, 903000, 768000, 946000, 621000, 858000, 1012000, 884000];
@@ -144,7 +144,7 @@ export function seed(now = new Date()): State {
   }));
 
   let ref = 214;
-  const nextRef = () => `LQ-${++ref}`;
+  const nextRef = () => `RQ-${++ref}`;
   const deals: Deal[] = [];
 
   /* history */
@@ -156,7 +156,7 @@ export function seed(now = new Date()): State {
     /* History spans all industries and matches each customer's service profile. */
     const buyers = Array.from({ length: n }, (_, k) => {
       const lean = r();
-      const g = k < 4 ? SEGMENTS[(k + i) % 4] : lean < 0.45 ? "Retail" : lean < 0.72 ? "Manufacturing" : lean < 0.82 ? "E-commerce" : "Services";
+      const g = k < 4 ? SEGMENTS[(k + i) % 4] : lean < 0.45 ? "Mining" : lean < 0.72 ? "Manufacturing" : lean < 0.82 ? "Engineering" : "Contractors";
       return pick(customers.filter((y) => y.segment === g));
     });
     const kinds = buyers.map((c) => pick(PAST_TITLES.filter((k) => c.pumps.some((p) => p.type === k[2]))));
@@ -203,15 +203,15 @@ export function seed(now = new Date()): State {
       created: day(-back - 16), owners, service, pumpType, urgency, source, pos: 0,
     });
     jobs.push({
-      id: `LB-${++jobNo}`, dealId: id, customerId, title, pumpType, done, due: day(due), machine, urgency,
+      id: `RB-${++jobNo}`, dealId: id, customerId, title, pumpType, done, due: day(due), machine, urgency,
       photo, parts: partsFor(pumpType, code),
     });
   });
-  [["Freight coordination", "c16", 118000, 6], ["Delivery programme", "c9", 37200, 9]].forEach(([title, customerId, value, back]) => {
+  [["Pipework study", "c16", 118000, 6], ["Equipment repair", "c9", 37200, 9]].forEach(([title, customerId, value, back]) => {
     deals.push({
       id: nextRef(), title: title as string, customerId: customerId as string, value: value as number, status: "lost",
       closes: inMonth(back as number), closedAt: inMonth(back as number), created: day(-(back as number) - 20), owners: ["DV"],
-      service: "Nationwide courier", pumpType: "Domestic", urgency: "planned", source: "Website", pos: 0, lostReason: "Existing provider",
+      service: title === "Pipework study" ? "Pipework & fittings" : "Repairs & refurbishment", pumpType: title === "Pipework study" ? "Fabrication" : "Repairs", urgency: "planned", source: "Website", pos: 0, lostReason: "Existing supplier",
     });
   });
 
@@ -224,14 +224,14 @@ export function seed(now = new Date()): State {
   });
   /* Assessments in progress before an order is confirmed. */
   const onFloor: [string, number, number, string, string, string][] = [
-    ["Inbound freight assessment", 2, 16, "Domestic courier", "workshop", "orxrxrrror"],
-    ["Domestic courier review", 1, 11, "International courier", "casing", "rxxxxrrror"],
-    ["Urgent document shipment", 2, 3, "Warehousing", "casing", "oroorxxooro"],
+    ["Transfer chute assessment", 2, 16, "Fabrication", "workshop", "orxrxrrror"],
+    ["Conveyor refurbishment review", 1, 11, "Repairs", "casing", "rxxxxrrror"],
+    ["Urgent equipment repair", 2, 3, "Repairs", "casing", "oroorxxooro"],
   ];
   onFloor.forEach(([title, done, due, machine, photo, code]) => {
     const d = deals.find((x) => x.title === title && x.status === "inspect")!;
     jobs.push({
-      id: `LB-${++jobNo}`, dealId: d.id, customerId: d.customerId, title, pumpType: d.pumpType, done, due: day(due),
+      id: `RB-${++jobNo}`, dealId: d.id, customerId: d.customerId, title, pumpType: d.pumpType, done, due: day(due),
       machine, urgency: d.urgency, photo, parts: partsFor(d.pumpType, code),
     });
   });
@@ -262,16 +262,16 @@ export function seed(now = new Date()): State {
   /* calendar */
   const mon = mondayOf(t0);
   const ev: [EventKind, string, string, number, number, number, string][] = [
-    ["Partner meeting", "Collection coordination", "c2", 0, 7, 2.5, "TM"],
-    ["Strategy call", "Logistics assessment", "c1", 0, 11, 2, "DV"],
-    ["Assessment", "Review freight requirements", "c4", 1, 8, 3, "TM"],
-    ["Strategy call", "Mailroom review", "c15", 1, 13, 1.5, "NP"],
-    ["Follow-up", "Urgent shipment coordination", "c14", 1, 18.5, 2, "TM"],
-    ["Service review", "Confirm regional delivery", "c6", 2, 7.5, 2, "RG"],
-    ["Assessment", "Review international route", "c7", 2, 10, 2, "DV"],
-    ["Strategy call", "Provider planning meeting", "c7", 2, 14, 2, "DV"],
-    ["Partner meeting", "Coordinate collection", "c13", 3, 6.5, 3, "TM"],
-    ["Service review", "Confirm customer delivery", "c14", 4, 8, 2, "RG"],
+    ["Partner meeting", "Project planning", "c2", 0, 7, 2.5, "TM"],
+    ["Strategy call", "Machine build assessment", "c1", 0, 11, 2, "DV"],
+    ["Assessment", "Review chute requirements", "c4", 1, 8, 3, "TM"],
+    ["Strategy call", "Steelwork review", "c15", 1, 13, 1.5, "NP"],
+    ["Follow-up", "Urgent repair planning", "c14", 1, 18.5, 2, "TM"],
+    ["Service review", "Confirm machine build", "c6", 2, 7.5, 2, "RG"],
+    ["Assessment", "Review support frame", "c7", 2, 10, 2, "DV"],
+    ["Strategy call", "Fabrication planning meeting", "c7", 2, 14, 2, "DV"],
+    ["Partner meeting", "Review site steelwork", "c13", 3, 6.5, 3, "TM"],
+    ["Service review", "Confirm equipment repair", "c14", 4, 8, 2, "RG"],
     ["Strategy call", "Quarterly review", "c2", 8, 10, 2, "NP"],
   ];
   const events: CalEvent[] = ev.map(([kind, title, customerId, off, start, hours, who], i) => ({
@@ -282,16 +282,16 @@ export function seed(now = new Date()): State {
   const at = (m: number) => now.getTime() - m * min;
   const find = (title: string) => deals.find((d) => d.title === title)?.id;
   const activity: Activity[] = [
-    { id: "a1", who: "TM", text: "coordinated an urgent document delivery", at: at(18), customerId: "c14" },
-    { id: "a2", who: "DV", text: "sent an e-commerce fulfilment proposal", at: at(64), customerId: "c3", dealId: find("E-commerce fulfilment") },
+    { id: "a1", who: "TM", text: "coordinated an urgent equipment repair", at: at(18), customerId: "c14" },
+    { id: "a2", who: "DV", text: "sent a hopper fabrication proposal", at: at(64), customerId: "c3", dealId: find("Hopper fabrication") },
     { id: "a3", who: "NP", text: "logged a call with Kagiso Molefe", at: at(141), customerId: "c2" },
     { id: "a4", who: "LJ", text: "matched a payment from Drakens Paper", at: at(205), customerId: "c6" },
-    { id: "a5", who: "RG", text: "confirmed a provider for Ironwood", at: at(322), customerId: "c1" },
+    { id: "a5", who: "RG", text: "confirmed a machine build for Ironwood", at: at(322), customerId: "c1" },
   ];
   const inbox: InboxItem[] = [
-    { id: "m1", channel: "Website", from: "Themba Nkosi, Delmora Foods", customerId: "c8", text: "Can you assess our regional delivery requirements?", at: at(26), service: "Nationwide courier", pumpType: "Domestic", estimate: 61500, urgency: "planned", title: "Regional delivery assessment", done: false },
-    { id: "m2", channel: "WhatsApp", from: "Nomsa Khoza, Kiaat Supplies", customerId: "c5", text: "We need an urgent delivery arranged. Can you help?", at: at(52), service: "Nationwide courier", pumpType: "Domestic", estimate: 118000, urgency: "breakdown", title: "Urgent delivery", done: false },
-    { id: "m3", channel: "Email", from: "Ruth Adams, Copperleaf Products", customerId: "c7", text: "Please quote on international deliveries for our team.", at: at(188), service: "International courier", pumpType: "International", estimate: 34800, urgency: "planned", title: "International courier quote", done: false },
+    { id: "m1", channel: "Website", from: "Themba Nkosi, Delmora Foods", customerId: "c8", text: "Can you assess our tank fabrication requirements?", at: at(26), service: "Platework & fabrication", pumpType: "Fabrication", estimate: 61500, urgency: "planned", title: "Tank fabrication assessment", done: false },
+    { id: "m2", channel: "WhatsApp", from: "Nomsa Khoza, Kiaat Resources", customerId: "c5", text: "We need urgent equipment repairs. Can you help?", at: at(52), service: "Repairs & refurbishment", pumpType: "Repairs", estimate: 118000, urgency: "breakdown", title: "Urgent equipment repair", done: false },
+    { id: "m3", channel: "Email", from: "Ruth Adams, Copperleaf Products", customerId: "c7", text: "Please quote on a conveyor support frame.", at: at(188), service: "Platework & fabrication", pumpType: "Fabrication", estimate: 34800, urgency: "planned", title: "Support frame quote", done: false },
   ];
 
   const outreach = seedOutreach(t0, now, customers, deals);

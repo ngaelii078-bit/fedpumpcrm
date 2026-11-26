@@ -179,7 +179,7 @@ function DealDrawer({ id, onClose }: { id: string; onClose: () => void }) {
       </dl>
       {job && (
         <>
-          <Sub>Service coordination</Sub>
+          <Sub>Workshop job</Sub>
           <div className="panel" style={{ padding: 14, display: "flex", gap: 12, alignItems: "center" }}>
             <Wrench size={18} className="muted" />
             <div><b className="mono" style={{ fontWeight: 500 }}>{job.id}</b><div className="small muted">{job.done} of 6 stages signed off, due {fmtDay(job.due)}</div></div>
@@ -296,7 +296,7 @@ const num = (v: string) => Number(v.replace(/[^\d.]/g, ""));
 function NewDeal({ preset, onClose }: { preset: { customerId?: string; title?: string; pumpType?: PumpType }; onClose: () => void }) {
   const { s, addDeal, toast } = useStore();
   const router = useRouter();
-  const [f, setF] = useState({ title: preset.title ?? "", customerId: preset.customerId ?? "", value: "", service: SERVICES[0] as Service, pumpType: preset.pumpType ?? ("Domestic" as PumpType), urgency: "planned" as Urgency, source: "Phone" as Source, closes: "14" });
+  const [f, setF] = useState({ title: preset.title ?? "", customerId: preset.customerId ?? "", value: "", service: SERVICES[0] as Service, pumpType: preset.pumpType ?? ("Machines" as PumpType), urgency: "planned" as Urgency, source: "Phone" as Source, closes: "14" });
   const [err, setErr] = useState<Record<string, string>>({});
   const up = (k: string) => (e: { target: { value: string } }) => setF((x) => ({ ...x, [k]: e.target.value }));
   return (
@@ -317,7 +317,7 @@ function NewDeal({ preset, onClose }: { preset: { customerId?: string; title?: s
         }}>
           <H leave={leave}>New enquiry</H>
           <div className="form">
-            <Field label="What needs doing" full error={err.title}><input data-autofocus className="inp" value={f.title} onChange={up("title")} placeholder="Nationwide parcel delivery requirements" /></Field>
+            <Field label="What needs doing" full error={err.title}><input data-autofocus className="inp" value={f.title} onChange={up("title")} placeholder="Fabricate a conveyor support frame" /></Field>
             <Field label="Customer" error={err.customerId}>
               <select className="inp" value={f.customerId} onChange={up("customerId")}>
                 <option value="">Choose a customer</option>
@@ -326,7 +326,7 @@ function NewDeal({ preset, onClose }: { preset: { customerId?: string; title?: s
             </Field>
             <Field label="Estimate, excl. VAT" error={err.value}><input className="inp" inputMode="numeric" value={f.value} onChange={up("value")} placeholder="85 000" /></Field>
             <Field label="Service"><select className="inp" value={f.service} onChange={up("service")}>{SERVICES.map((x) => <option key={x}>{x}</option>)}</select></Field>
-            <Field label="Logistics scope"><select className="inp" value={f.pumpType} onChange={up("pumpType")}>{PUMP_TYPES.map((x) => <option key={x}>{x}</option>)}</select></Field>
+            <Field label="Work category"><select className="inp" value={f.pumpType} onChange={up("pumpType")}>{PUMP_TYPES.map((x) => <option key={x}>{x}</option>)}</select></Field>
             <Field label="Urgency"><select className="inp" value={f.urgency} onChange={up("urgency")}><option value="planned">Planned</option><option value="breakdown">Urgent</option><option value="shutdown">Project deadline</option></select></Field>
             <Field label="Expected close"><select className="inp" value={f.closes} onChange={up("closes")}><option value="2">In 2 days</option><option value="7">In a week</option><option value="14">In 2 weeks</option><option value="30">In a month</option></select></Field>
           </div>
@@ -342,7 +342,7 @@ function NewDeal({ preset, onClose }: { preset: { customerId?: string; title?: s
 
 function NewCustomer({ onClose }: { onClose: () => void }) {
   const { addCustomer, setOpen, toast } = useStore();
-  const [f, setF] = useState({ contact: "", role: "", company: "", segment: "Retail" as Segment, town: "", phone: "", email: "" });
+  const [f, setF] = useState({ contact: "", role: "", company: "", segment: "Mining" as Segment, town: "", phone: "", email: "" });
   const [err, setErr] = useState<Record<string, string>>({});
   const up = (k: string) => (e: { target: { value: string } }) => setF((x) => ({ ...x, [k]: e.target.value }));
   return (
@@ -363,7 +363,7 @@ function NewCustomer({ onClose }: { onClose: () => void }) {
           <H leave={leave}>New customer</H>
           <div className="form">
             <Field label="Contact name" error={err.contact}><input data-autofocus className="inp" value={f.contact} onChange={up("contact")} /></Field>
-            <Field label="Role"><input className="inp" value={f.role} onChange={up("role")} placeholder="Logistics manager" /></Field>
+            <Field label="Role"><input className="inp" value={f.role} onChange={up("role")} placeholder="Engineering manager" /></Field>
             <Field label="Company" error={err.company}><input className="inp" value={f.company} onChange={up("company")} /></Field>
             <Field label="Industry"><select className="inp" value={f.segment} onChange={up("segment")}>{SEGMENTS.map((x) => <option key={x}>{x}</option>)}</select></Field>
             <Field label="Phone" error={err.phone}><input className="inp" inputMode="tel" value={f.phone} onChange={up("phone")} /></Field>
@@ -398,7 +398,7 @@ function NewEvent({ preset, onClose }: { preset: { date?: string; start?: number
         }}>
           <H leave={leave}>Book a slot</H>
           <div className="form">
-            <Field label="Description" full error={err}><input data-autofocus className="inp" value={f.title} onChange={up("title")} placeholder="Discuss delivery requirements" /></Field>
+            <Field label="Description" full error={err}><input data-autofocus className="inp" value={f.title} onChange={up("title")} placeholder="Discuss fabrication requirements" /></Field>
             <Field label="Type"><select className="inp" value={f.kind} onChange={up("kind")}>{EVENT_KINDS.map((x) => <option key={x}>{x}</option>)}</select></Field>
             <Field label="Customer"><select className="inp" value={f.customerId} onChange={up("customerId")}>{s.customers.map((c) => <option key={c.id} value={c.id}>{c.company}</option>)}</select></Field>
             <Field label="Date"><input className="inp" type="date" value={f.date} onChange={up("date")} /></Field>
@@ -449,11 +449,11 @@ function NewCampaign({ preset, onClose }: { preset: { audience?: AudienceKey; se
   const { s, dispatch, toast } = useStore();
   const router = useRouter();
   const [aud, setAud] = useState<AudienceKey>(preset.audience ?? "due");
-  const [seg, setSeg] = useState<Segment | "All">(preset.segment ?? (preset.audience === "prospects" ? "E-commerce" : "All"));
+  const [seg, setSeg] = useState<Segment | "All">(preset.segment ?? (preset.audience === "prospects" ? "Mining" : "All"));
   const [name, setName] = useState("");
   const cold = aud === "prospects";
   const built = useMemo(() => buildAudience(s, aud, seg), [s, aud, seg]);
-  const steps = useMemo(() => stepsFor(aud, seg === "All" ? "Retail" : seg), [aud, seg]);
+  const steps = useMemo(() => stepsFor(aud, seg === "All" ? "Mining" : seg), [aud, seg]);
   const auto = `${AUDIENCES[aud].name}${seg === "All" ? "" : ", " + seg.toLowerCase()}`;
   const save = (start: boolean) => {
     const c: Campaign = { id: "k" + Date.now().toString(36), name: name.trim() || auto, audience: aud, segment: seg, status: "Draft", steps, recipients: built.list };
@@ -475,11 +475,11 @@ function NewCampaign({ preset, onClose }: { preset: { audience?: AudienceKey; se
               <fieldset style={{ display: "grid", gap: 8 }}>
                 <legend className="lab">Who gets it</legend>
                 {(Object.keys(AUDIENCES) as AudienceKey[]).map((k) => {
-                  const kSeg = k === "prospects" ? (seg === "All" ? "E-commerce" : seg) : k === aud ? seg : "All";
+                  const kSeg = k === "prospects" ? (seg === "All" ? "Mining" : seg) : k === aud ? seg : "All";
                   const n = buildAudience(s, k, kSeg).list.length;
                   return (
                     <label key={k} className={"pick" + (aud === k ? " on" : "")}>
-                      <input type="radio" name="aud" checked={aud === k} onChange={() => { setAud(k); setSeg(k === "prospects" ? "E-commerce" : "All"); }} />
+                      <input type="radio" name="aud" checked={aud === k} onChange={() => { setAud(k); setSeg(k === "prospects" ? "Mining" : "All"); }} />
                       <span style={{ flex: 1, minWidth: 0 }}><b style={{ fontWeight: 600 }}>{AUDIENCES[k].name}</b><span className="small muted" style={{ display: "block" }}>{AUDIENCES[k].blurb}</span></span>
                       <span className="display tnum" style={{ fontWeight: 600, fontSize: 18 }}>{n}</span>
                     </label>
@@ -529,7 +529,7 @@ function LogCall({ preset, onClose }: { preset?: string; onClose: () => void }) 
           <H leave={leave}>Log a call</H>
           <div className="form">
             <Field label="Customer" full><select className="inp" value={id} onChange={(e) => setId(e.target.value)}>{s.customers.map((c) => <option key={c.id} value={c.id}>{c.contact}, {c.company}</option>)}</select></Field>
-            <Field label="Notes" full><textarea data-autofocus className="inp" rows={4} value={note} onChange={(e) => setNote(e.target.value)} placeholder="Discuss delivery volumes and service requirements" /></Field>
+            <Field label="Notes" full><textarea data-autofocus className="inp" rows={4} value={note} onChange={(e) => setNote(e.target.value)} placeholder="Discuss drawings, materials and job requirements" /></Field>
           </div>
           <div style={{ display: "flex", gap: 10, justifyContent: "flex-end", marginTop: 18 }}>
             <button type="button" className="btn" onClick={leave}>Cancel</button>

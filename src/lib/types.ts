@@ -1,15 +1,15 @@
 export type Stage = "enquiry" | "inspect" | "quoted" | "po";
 export type DealStatus = Stage | "won" | "lost";
-export type Segment = "Retail" | "Manufacturing" | "E-commerce" | "Services";
-export type PumpType = "Domestic" | "International" | "Freight";
+export type Segment = "Mining" | "Manufacturing" | "Engineering" | "Contractors";
+export type PumpType = "Machines" | "Fabrication" | "Repairs";
 export type Service =
-  | "Nationwide courier"
-  | "Strategic assessment"
-  | "International courier"
-  | "Transport & warehousing"
-  | "Air sea & customs"
-  | "E-commerce logistics"
-  | "Mailroom management";
+  | "Machine builds"
+  | "Platework & fabrication"
+  | "Pipework & fittings"
+  | "Repairs & refurbishment"
+  | "Structural steelwork"
+  | "Engineering consulting"
+  | "Assessment";
 export type Urgency = "planned" | "breakdown" | "shutdown";
 export type Source = "Repeat" | "Referral" | "WhatsApp" | "Website" | "Phone" | "Outreach";
 

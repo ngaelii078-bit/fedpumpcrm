@@ -1,6 +1,6 @@
 @echo off
 cd /d "%~dp0"
-title Fedpump CRM demo
+title Rebotech CRM demo
 where node >nul 2>nul || (echo Node.js is needed. Install it from https://nodejs.org and run this again. & pause & exit /b 1)
 if not exist out\index.html (
   echo First run, building the demo...
